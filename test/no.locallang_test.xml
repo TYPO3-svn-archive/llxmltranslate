@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<data type="array">
+		<languageKey index="no" type="array">
+			<label index="item1">123sasaasasdsd</label>
+			<label index="item2">456 asdfasfd
+
+asdfasdf asdf asdf</label>
+		</languageKey>
+	</data>
+	<orig_hash type="array">
+		<languageKey index="no" type="array">
+			<label index="item1" type="integer">110009502</label>
+			<label index="item2" type="integer">104119161</label>
+		</languageKey>
+	</orig_hash>
+	<orig_text type="array">
+		<languageKey index="no" type="array">
+			<label index="item1">Value 1s</label>
+			<label index="item2">Value 2
+
+Changed now!</label>
+		</languageKey>
+	</orig_text>
+</T3locallang>

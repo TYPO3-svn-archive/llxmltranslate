@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallangExt>
+	<data type="array">
+		<languageKey index="dk" type="array">
+			<label index="item1">s sdf sdf d 5467d</label>
+			<label index="item2">asdf asdf asdf 
+men der er en ændring, som gælder!
+dsaf asdf</label>
+		</languageKey>
+		<languageKey index="ru" type="array">
+			<label index="item1">asdf</label>
+		</languageKey>
+	</data>
+	<orig_hash type="array">
+		<languageKey index="dk" type="array">
+			<label index="item1" type="integer">171710727</label>
+			<label index="item2" type="integer">37174697</label>
+		</languageKey>
+		<languageKey index="ru" type="array">
+			<label index="item1" type="integer">14700079</label>
+		</languageKey>
+	</orig_hash>
+	<orig_text type="array">
+		<languageKey index="dk" type="array">
+			<label index="item1">Value 144 kjæsdfsd asdf sdfg</label>
+			<label index="item2">Value 2
+x
+Changed now!</label>
+		</languageKey>
+		<languageKey index="ru" type="array">
+			<label index="item1">Value 132</label>
+		</languageKey>
+	</orig_text>
+</T3locallangExt>

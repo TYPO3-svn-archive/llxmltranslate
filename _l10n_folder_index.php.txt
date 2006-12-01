@@ -1,0 +1,70 @@
+<?php
+# THIS FILE should be located in "typo3conf/l10n/" of a site serving locallang translations.
+# The file is developed under the extension "llxmltranslate" and all changes should be made in that extension
+
+require_once('../../t3lib/class.t3lib_div.php');
+
+# Getting language key:
+$langKey = t3lib_div::_GET('langKey');
+$extensions = t3lib_div::_GET('extList');
+
+if ($langKey)	{
+	if (ereg('^[a-z][a-z]$',$langKey))	{
+		if (!ereg('[^[:alnum:]_,]',$extensions))	{
+
+			if ($extensions)	{	// Send file stat for extensions listed:
+				$extensionsArray = explode(',',$extensions);
+				$outputFile = array();
+
+				foreach($extensionsArray as $extKey)	{
+					$fileArr = array();
+					$fileArr = t3lib_div::getAllFilesAndFoldersInPath($fileArr,'./'.$langKey.'/'.$extKey.'/','xml');
+					$fileArr = t3lib_div::removePrefixPathFromList($fileArr,'./'.$langKey.'/'.$extKey.'/');
+					
+					$outputFile[$extKey] = array();
+					foreach($fileArr as $file)	{
+						$outputFile[$extKey][]	= array(
+							'file' => $langKey.'/'.$extKey.'/'.$file,
+							'md5' => md5_file('./'.$langKey.'/'.$extKey.'/'.$file),
+							'modtime' => @filemtime('./'.$langKey.'/'.$extKey.'/'.$file)
+						);
+					}
+				}
+					
+				header('Content-Type: text/xml');
+				echo '<?xml version="1.0" standalone="yes" ?>'.
+					t3lib_div::array2xml(array(
+							'mode' => 'list_files', 
+							'lang' => $langKey, 
+							'files' => $outputFile
+						), '', 0, 'llxmltranslate',0,array(
+								'parentTagMap' => array(
+										'files' => 'extension',
+										'extension' => 'fileentry'
+									),
+								'disableTypeAttrib' => 2
+							));
+			} else {	// List extensions for language:
+				$availableTranslations = t3lib_div::get_dirs('./'.$langKey);
+				header('Content-Type: text/xml');
+				echo '<?xml version="1.0" standalone="yes" ?>'.
+					t3lib_div::array2xml(array(
+							'mode' => 'list_extensions', 
+							'lang' => $langKey, 
+							'extensions' => $availableTranslations,
+							'tip' => 'To get file list for extension(s), add "?langKey='.$langKey.'&extList=[ext1],[ext2],..." to URL!'
+						), '', 0, 'llxmltranslate');
+			}
+		} else die('&extOnly was not purely alphanumeric comma list!');
+	} else die('&langKey was not a 2-letter code for language!');
+} else {
+	$availableLanguages = t3lib_div::get_dirs('./');
+	header('Content-Type: text/xml');
+	echo '<?xml version="1.0" standalone="yes" ?>'.
+		t3lib_div::array2xml(array(
+				'mode' => 'list_languages', 
+				'languages' => $availableLanguages,
+				'tip' => 'To list single language, add "?langKey=[language key]" to URL!'
+			), '', 0, 'llxmltranslate');
+}
+?>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<description>TESTING ll-XML</description>
+		<type>module</type>
+		<csh_table>_nothing_</csh_table>
+		<labelContext type="array">
+			<label index="item1">Testing first item.</label>
+		</labelContext>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="item1">Value 144 kjæsdfsd asdf sdfg</label>
+			<label index="item2">Value 2
+x
+Changed now! ds</label>
+		</languageKey>
+		<languageKey index="dk">EXT:llxmltranslate/test/dk.locallang_test.xml</languageKey>
+		<languageKey index="de">EXT:llxmltranslate/test/de.locallang_test.xml</languageKey>
+		<languageKey index="no">EXT:llxmltranslate/test/no.locallang_test.xml</languageKey>
+		<languageKey index="fr">EXT:llxmltranslate/test/fr.locallang_test.xml</languageKey>
+		<languageKey index="ru">EXT:llxmltranslate/test/dk.locallang_test.xml</languageKey>
+		<languageKey index="it" type="array">
+			<label index="item1">123af</label>
+			<label index="item2">asdfasdf asd fasdf sdf</label>
+		</languageKey>
+		<languageKey index="es" type="array">
+			<label index="item1">ss asdf</label>
+			<label index="item2">asdfasdf</label>
+		</languageKey>
+	</data>
+	<orig_hash type="array">
+		<languageKey index="it" type="array">
+			<label index="item1" type="integer">171710727</label>
+			<label index="item2" type="integer">232143694</label>
+		</languageKey>
+	</orig_hash>
+	<orig_text type="array">
+		<languageKey index="it" type="array">
+			<label index="item1">Value 144 kjæsdfsd asdf sdfg</label>
+			<label index="item2">Value 2
+x
+Changed now! ds</label>
+		</languageKey>
+	</orig_text>
+</T3locallang>

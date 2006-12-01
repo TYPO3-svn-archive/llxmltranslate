@@ -1,0 +1,104 @@
+#! /usr/bin/php -q
+<?php
+
+// *****************************************
+// Standard initialization of a CLI module:
+// *****************************************
+
+	// Defining circumstances for CLI mode:
+define('TYPO3_cliMode', TRUE);
+
+	// Defining PATH_thisScript here: Must be the ABSOLUTE path of this script in the right context:
+	// This will work as long as the script is called by it's absolute path!
+define('PATH_thisScript',$_ENV['_']?$_ENV['_']:$_SERVER['_']);
+
+	// Include configuration file:
+require(dirname(PATH_thisScript).'/conf.php');
+
+	// Include init file:
+require(dirname(PATH_thisScript).'/'.$BACK_PATH.'init.php');
+
+@ini_set('max_execution_time',3600);
+
+# HERE you run your application!
+
+$thePath = PATH_site.'typo3conf/l10n/';
+$ter_path = PATH_site.'typo3conf/l10n_ter/';
+
+if (@is_dir($thePath) && @is_dir($ter_path))	{
+
+		// First, generate ZIP files from l10n/ dir:
+	$dirs = t3lib_div::get_dirs($thePath);
+	foreach($dirs as $dir)	{
+		if (strlen($dir)==2 && $dir!='..')	{
+
+				// Get subdirectories in there (extension keys):
+			$extensionDirs = t3lib_div::get_dirs($thePath.$dir.'/');
+			chdir($thePath.$dir.'/');
+		
+				// Traverse extensions and make zip-files:
+			foreach($extensionDirs as $extKey) {
+
+					// Paths:
+				$dir_suffix = $extKey{0}.'/'.$extKey{1}.'/'.$extKey.'-l10n/';
+				$destDir = $ter_path.$dir_suffix;
+
+					// Create directory if it doesn't exist:
+				if (!@is_dir($destDir))	{
+					t3lib_div::mkdir_deep($ter_path,$dir_suffix);
+				}
+
+					// Write file:
+				if (@is_dir($destDir))	{
+					$cmd = 'zip -r '.$destDir.$extKey.'-l10n-'.$dir.'.zip '.$extKey.'/';
+#					echo $cmd.chr(10);
+					exec($cmd);
+				} else {
+					echo $destDir.' could not be created/found!'.chr(10);
+				}
+			}
+		}
+	}
+
+		// Second, lets make XML files with information about packages:
+	$dirs = t3lib_div::getAllFilesAndFoldersInPath(array(),$ter_path,'somethingUnrealisticMakingSureNoFilesHasThisExtensionSoOnlyDirectoriesAreSelected',TRUE);
+	$dirs = t3lib_div::removePrefixPathFromList($dirs,$ter_path);
+	foreach($dirs as $dir)	{
+		$reg = NULL;
+		if (ereg('^(.)\/(.)\/(.+)-l10n\/$',$dir,$reg) && $reg[1].$reg[2] === $reg[3]{0}.$reg[3]{1})	{
+			
+				// Extract extension key:
+			$extKey = $reg[3];
+			
+				// Read package files:
+			$packages = t3lib_div::getFilesInDir($ter_path.$dir,'zip');
+
+				// Compile XML index:
+			$xml = '<?xml version="1.0" standalone="yes" ?>
+<TERlanguagePackIndex>
+	<meta>
+		<timestamp>'.time().'</timestamp>
+		<date>'.date('Y-m-d H:i:s').'</date>
+	</meta>
+	<languagePackIndex>';
+			foreach($packages as $packageFile)	{
+				$reg = NULL;
+				if (ereg('^'.$extKey.'-l10n-(..)\.zip$',$packageFile,$reg))	{
+					$xml.= '
+		<languagepack language="'.$reg[1].'">
+			<md5>'.md5_file($ter_path.$dir.$packageFile).'</md5>
+		</languagepack>';
+				}
+			}
+			
+			$xml.= '
+	</languagePackIndex>
+</TERlanguagePackIndex>';
+			
+				// Write XML:
+			t3lib_div::writeFile($ter_path.$dir.'/'.$extKey.'-l10n.xml', $xml);
+		}
+	}
+}
+
+?>

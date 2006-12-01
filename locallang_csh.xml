@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<description>CSH for the &quot;llxmltranslate&quot; extension</description>
+		<type>CSH</type>
+		<csh_table>_MOD_txllxmltranslateM1</csh_table>
+		<labelContext type="array">
+		</labelContext>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index=".alttitle">Translation of ll-XML files</label>
+			<label index=".description">This module enables a backend user to translate all ll-XML files found in local, global and system extensions on the current installation.</label>
+			<label index=".details">locallang-XML files (ll-XML) contains localized versions of labels in the TYPO3 backend including Context Sensitive Help etc. The format is XML based and stored in utf-8. Translation is done using this module which will create easy-to-use forms for translation of the default english content. The translations/changes are saved directly back to the XML files on the server. The content can be exported and sent in a file to another translator, the author of an extensions, to the core team etc. The export file can be merged into another system while showing a nice diff-view telling what the differences are.</label>
+			<label index="_.image">EXT:llxmltranslate/cshimages/shot1.png</label>
+			<label index=".image_descr">An example of the translation interface, here for a ll-XML file containing labels for Context Sensitive Help (CSH).</label>
+			<label index="funcmenu_1.alttitle">Settings for ll-XML translation module</label>
+			<label index="funcmenu_1.description">The settings screen allows you to select which language you want to translate to, which additional languages to show when translating, fontsize etc.</label>
+			<label index="funcmenu_1.details">If you are logged in as an Admin-user you can freely select which language you want to translate for. All system languages in TYPO3 are available for you. If you are not an admin user you will only be able to translate for the language configured in your user-record. Only an admin-user can change this for you.
+&lt;b&gt;Notice (admins):&lt;/b&gt; It really is the language from the backend user record that is used here! The language configured in the User&gt;Setup module might be different.
+
+&lt;b&gt;Selecting additional languages&lt;/b&gt;
+When translating you might like to see what translations other languages has made. For instance Danish and Norwegian languages are so close that the Norwegian translator might like to see the Danish translations next to the default english labels when he translate. The same applies to such as Portuguese and Brazil Portuguese.
+You can select additional languages to be shown by the checkboxes.
+
+&lt;b&gt;Fontsize?&lt;/b&gt;
+Changing the font-size is practical for certain languages like chinese, hebrew, arabic etc. where the glyphs may be rendered too small in the default size.</label>
+			<label index="_funcmenu_1.image">EXT:llxmltranslate/cshimages/shot2.png</label>
+			<label index="funcmenu_1.image_descr">Here &quot;Danish&quot; is selected as the language to translate to.</label>
+			<label index="funcmenu_2.alttitle">Translating files</label>
+			<label index="funcmenu_2.description">Here you can select one of the ll-XML files found in the installation and translate its content.</label>
+			<label index="funcmenu_2.details">&lt;b&gt;Selecting a file&lt;/b&gt;
+The selectorbox &quot;Select file&quot; will show all locallang-xml files found on your installation. You will see a number after some files (those you visited already) which indicates the number of labels that needs a translation for the selected languages. You can update the count number for all files in one go if you visit the menu item &quot;Re-generate cached information&quot; (takes some time!).
+The list is divided by the label &quot;CSH&quot; somewhere in the middle. All Context Sensitive Help (CSH) files are found after this divider string. As a translator this is very useful to know because all files that are not CSH should have higher priority (system labels in the backend) and CSH is something you can &quot;do in your sparetime&quot; since it is typically large amounts of help text.
+
+&lt;b&gt;Selecting language&lt;/b&gt;
+The &quot;Language&quot; selector will show you for which language you are currently translating. If you are an admin user you can change this value, otherwise it is locked to the language of your user record.</label>
+			<label index="_funcmenu_2.image">EXT:llxmltranslate/cshimages/shot3.png</label>
+			<label index="funcmenu_2.image_descr">The list of ll-XML files on the system. Some have a number appended which indicates the number of missing translations for the currently selected language (which is Spanish here).</label>
+			<label index="funcmenu_2_fileinfo.alttitle">ll-XML file information</label>
+			<label index="funcmenu_2_fileinfo.description">Shows meta information about the locallang-XML file currently selected.</label>
+			<label index="funcmenu_2_fileinfo.details">The gray box under the ruler shows information about the XML file. You see the file ID, description, content type and a link to the &quot;CSH table&quot; that is configured. Some of the information here has to follow certain rules and if something mismatches you might see a red colored error message.
+For CSH content you can click the &quot;CSH table&quot; value and the CSH window pops up. Also for CSH you might see information about an &quot;Automatic Filename Template&quot; and whether the original text is kept for each translation which can later be used to show a &quot;diff&quot; between original and new default value.</label>
+			<label index="_funcmenu_2_fileinfo.image">EXT:llxmltranslate/cshimages/shot5.png, 
+EXT:llxmltranslate/cshimages/shot4.png</label>
+			<label index="funcmenu_2_fileinfo.image_descr">File meta information for a CSH type file. You can click the link &quot;_MOD_txllxmltranslateM1&quot; and the CSH viewer window will pop up.
+This example shows how the box will issue warnings if the values are different than expected. The red messages doesn't necessarily mean that the values are truely invalid but since there are certain typical patterns they follow this is evaluated for your convenience.</label>
+			<label index="funcmenu_2_stat.alttitle">Statistics box</label>
+			<label index="funcmenu_2_stat.description">Overview of labels that are OK and which needs translation.</label>
+			<label index="funcmenu_2_stat.details">The statistics box shows you how many labels are OK, new, changed and status unknown. Each state is colored and corresponds with the background color used in the fields in the translation forms underneath.</label>
+			<label index="_funcmenu_2_stat.image">EXT:llxmltranslate/cshimages/shot6.png, 
+EXT:llxmltranslate/cshimages/shot7.png</label>
+			<label index="funcmenu_2_stat.image_descr">The statistics over the labels.
+In the translation form each field will be colored depending on its status. Here the blue and green background colors are applied to show a field that needs a translation and some fields which are OK already.</label>
+			<label index="funcmenu_2_translationinterface.alttitle">Translation interface</label>
+			<label index="funcmenu_2_translationinterface.description">Form fields for editing translations.</label>
+			<label index="funcmenu_2_translationinterface.details">The interface consists of 4 main columns:
+&quot;Key&quot; : Contains the label key. This is the &quot;id&quot; of the value
+&quot;Default&quot; : Contains the default label in english. This is the text you should translate! If you see a horizontal ruler with some text in italic underneath then this is information to you as a translator about the context where the label is used. This information may be supplied when the context of a label is not immediately clear and should be considered for a correct translation. Of course you should not translate the italic text!
+[language key] : Contains an input field or textarea where you can enter your translation. Usually a text area field is shown in the default label contains more than one line, otherwise it is a single line input field. The background color will reflect the state of the value (OK, new, changed etc...)
+&quot;Status&quot; : The status column shows the state of the label (OK, new, changed etc...) If the status is &quot;Changed&quot; then you will see a &quot;diff&quot; view if the XML file contains &quot;orig_text&quot; information about the original default value. This is rarely the case except for CSH values in the series of dedicated CSH extensions.
+In addition to these four columns you will see a column for each support-language you configured in the settings menu.</label>
+			<label index="_funcmenu_2_translationinterface.seeAlso">_MOD_txllxmltranslateM1:funcmenu_2_translationinterface_csh</label>
+			<label index="_funcmenu_2_translationinterface.image">EXT:llxmltranslate/cshimages/shot8.png, 
+EXT:llxmltranslate/cshimages/shot9.png, 
+EXT:llxmltranslate/cshimages/shot11.png</label>
+			<label index="funcmenu_2_translationinterface.image_descr">The label key, default language and translation field (here &quot;de&quot; for German translation).
+This example shows how the Status field reports that the original value of a label was changed. This tells a translator that he should check if his translation is still current. Sometimes a change in the default label may be so insignificant (eg. spelling error) that no change is required. Other times a new meaning or additional information is added which means that a new translation must be considered.
+Depending on configuration on a per-file basis you may see that changed fields also present a &quot;diff-view&quot; of the changed content. The red content is the previous words, the green is the new words and the black is words that did not change.</label>
+			<label index="funcmenu_2_translationinterface_csh.alttitle">Translation of CSH</label>
+			<label index="funcmenu_2_translationinterface_csh.description">Form fields for creating and translating Context Sensitive Help.</label>
+			<label index="funcmenu_2_translationinterface_csh.details">The translation for CSH content is slightly different. Each CSH item consists of some sub items (alternative title, description, details, see-also links, images, image descriptions) and they are grouped together with an orange colored header. 
+The title in the header can be clicked and it will show you the CSH window with the item so you can immediately preview how it looks!
+By default see-also links and images are possible to select only for the default language and translations can be applied only to the text descriptions.
+The &quot;[SEE ALSO]&quot; selector box will contain a number of links to other CSH items. If the box is empty or you cannot find a link in there that you know should be around, please try to go to the menu item &quot;Re-generate cached information&quot; since that will populate the box for you.
+The &quot;[IMAGE]&quot; box will contain a list of images which are found in the subfolder &quot;cshimages/&quot; to the folder where the current XML file resides.</label>
+			<label index="_funcmenu_2_translationinterface_csh.seeAlso">_MOD_txllxmltranslateM1:funcmenu_2_translationinterface</label>
+			<label index="funcmenu_2_saving.alttitle">Saving the changes</label>
+			<label index="funcmenu_2_saving.description">Save edited translation by clicking the &quot;Save&quot; button.</label>
+			<label index="funcmenu_2_saving.details">You press the &quot;Save&quot; button to save the translations. When you do so you will see a log-message of a rather technical character which will not be discussed in detail here. Generally the message will tell you which labels were found to be changed since the XML file will only be updated if something actually was changed.
+If you select the checkbox &quot;Update all values (even if not changed)&quot; all values will be saved even if they didn't need to be. You only need this if you for some reason want to force the translation tool to update the file, hash-values and original text strings.
+From the Save-log you should only be concerned if there are entries in the &quot;Error&quot; list (which should normally display &quot;EMPTY&quot;).
+There is a similar &quot;Save&quot; button in the bottom of the screen as well.</label>
+			<label index="_funcmenu_2_saving.image">EXT:llxmltranslate/cshimages/shot10.png,
+EXT:llxmltranslate/cshimages/shot12.png</label>
+			<label index="funcmenu_2_saving.image_descr">The save log may look like this. Here you are told that a single label changed its value in the editing session you just had. Also a hash of the XML file is shown (sometimes you might want to know this). Notice the &quot;ERRORS&quot; section is empty (which is good!)
+In this example the save button was pressed but no labels changed. When the module wanted to save the new XML it compared with the current XML and found that the content was exactly the same, so it didn't need to save.</label>
+			<label index="funcmenu_4.alttitle">Re-generate Cached information</label>
+			<label index="funcmenu_4.description">Re-generates cached information such as number of needed translations for each XML file.</label>
+			<label index="funcmenu_4.details">The regeneration of cached content will parse all found XML files, count the number of needed translations for the currently selected language and also collect the see-also references available in the system for the &quot;[SEE ALSO]&quot; box. 
+The re-generation may take a lot of time (eg. 20 seconds or more).</label>
+			<label index="funcmenu_10.alttitle">Export</label>
+			<label index="funcmenu_10.description">Export translations for a language to a file (for exchange / merging on another server).</label>
+			<label index="funcmenu_10.details">You can export ll-XML labels for a language into a file. This is meant for exchange of translations between chief and assisting translators etc. Or if you have made custom translations of TYPO3 and want to upgrade the source you can make an export before the upgrade and then merge your custom translations back in.
+
+When you are ready to export you click the &quot;Export&quot; button and you will be asked to save a file.
+
+&lt;b&gt;Language:&lt;/b&gt;
+Select language. Only one language can be contained in the file.
+
+&lt;b&gt;Select which ll-XML files&lt;/b&gt;
+You select one or more ll-XML files to export. Use shift/ctrl keys to select multiple values.</label>
+			<label index="_funcmenu_10.seeAlso">_MOD_txllxmltranslateM1:funcmenu_11</label>
+			<label index="_funcmenu_10.image">EXT:llxmltranslate/cshimages/shot13.png</label>
+			<label index="funcmenu_11.alttitle">Merge translations</label>
+			<label index="funcmenu_11.description">Allows you to import an Export-file.</label>
+			<label index="funcmenu_11.details">You can merge exported languages by this interface. Simply select the exported file with the &quot;Browse&quot; button and click &quot;Upload merge-file&quot;.
+The language selected must be the same as the language inside the exported file.
+If you want to concentrate on merging labels for a specific file only you can select that with the &quot;Select specific file&quot; selector box.
+If you want to show only an overview of files inside the export file you simply click &quot;Show only which files are inside&quot;.
+
+When you click the merge-button you will see what files are different and all label keys with differences are shown to you.
+You will then see the default value, the value of the selected language from both local XML file and the export file, and finally a diff-view with red/green colors shows you the differences. 
+If you want to merge the changes from the export file you selected you need to check the &quot;Merge&quot; checkbox.
+If the interface thinks that the original label that the translations stems from you will be told so by a message in the &quot;Merge&quot; box.</label>
+			<label index="_funcmenu_11.seeAlso">_MOD_txllxmltranslateM1:funcmenu_10</label>
+			<label index="_funcmenu_11.image">EXT:llxmltranslate/cshimages/shot14.png, 
+EXT:llxmltranslate/cshimages/shot15.png, 
+EXT:llxmltranslate/cshimages/shot16.png</label>
+			<label index="funcmenu_11.image_descr">Merging an exported file.
+Here you see that a label (&quot;shortcut_save&quot;) changed in the file &quot;sysext/lang/locallang_misc.xml&quot;. You now have a chance to preview the current local value compared to the suggested value from the import file. By default the new value is accepted (the checkbox is set).
+In the last column you will see a &quot;diff-view&quot; of the content. This enables you to easily spot the changes that was made.</label>
+		</languageKey>
+	</data>
+	<orig_hash type="array">
+	</orig_hash>
+	<orig_text type="array">
+	</orig_text>
+</T3locallang>
