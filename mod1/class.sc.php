@@ -1193,7 +1193,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * You can expect to get a complete data array for 'default' AND ONLY the select edit language (since ll-XML with externally stored content for various languages is only read for the edit-language)
 	 *
 	 * @param	string		XML file reference, relative to PATH_site.
-	 * @return	array
+	 * @return	array	Array (contents of XML file)
 	 */
 	function getXMLdata($fileRef)	{
 
@@ -1206,10 +1206,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			$dataArray['meta']['_ORIG_LANGUAGE_DATA'] = $dataArray['data'][$editLang];
 
 				// If no entry is found for the language key, then force a value depending on meta-data setting. By default an automated filename will be used:
-			if ($editLang!='default' && !isset($dataArray['data'][$editLang]))	{
-				$autoFileName = $dataArray['data'][$editLang] = t3lib_div::llXmlAutoFileName(PATH_site.$fileRef, $editLang);
-			} else {
-				$autoFileName = '';
+			$autoFileName = '';
+			if ($editLang != 'default') {
+				$autoFileName = t3lib_div::llXmlAutoFileName(PATH_site.$fileRef, $editLang);
+				if ($autoFileName && @file_exists(PATH_site . $autoFileName))	{
+					$dataArray['data'][$editLang] = $autoFileName;
+				}
 			}
 
 				// Looking for external values for a certain edit-language:
@@ -1606,17 +1608,18 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		if ($editLang=='default') {
 			$msg_autoFilename = 'Default language, no external file.';
 		} elseif ($externalFile) {
-				$msg_autoFilename = $externalFile;
+			$msg_autoFilename = $externalFile;
 
-			if (isset($xmlArray['meta']['_ORIG_LANGUAGE_DATA']) && !is_array($xmlArray['meta']['_ORIG_LANGUAGE_DATA'])) {
-				// Here is locallang.xml references external file like this:
-				//        <languageKey index="dk">EXT:irfaq/lang/dk.locallang.xml</languageKey>
-				$msg_autoFilename.='<br/><span class="typo3-green"><b>Translations in specific external file: "'.$xmlArray['meta']['_ORIG_LANGUAGE_DATA'].'"</b></span>';
-			}
-			elseif (@file_exists(PATH_site . $externalFile)) {
+			if (@file_exists(PATH_site . $externalFile)) {
 				// Here is translated file exists but original file still keeps entries.
 				// Happens when translating core and core language files are read-only
-				$msg_autoFilename.='<br/><span class="typo3-green"><b>Translations in specific external file: "' . $externalFile . '"</b></span>';
+				$msg_autoFilename .= '<br/><span class="typo3-green"><b>Translations in specific external file: "' . $externalFile . '"</b></span>';
+			}
+			elseif (isset($xmlArray['meta']['_ORIG_LANGUAGE_DATA']) && !is_array($xmlArray['meta']['_ORIG_LANGUAGE_DATA'])) {
+				// Here is locallang.xml references external file like this:
+				//        <languageKey index="dk">EXT:irfaq/lang/dk.locallang.xml</languageKey>
+				$msg_autoFilename = $xmlArray['meta']['_ORIG_LANGUAGE_DATA'];
+				$msg_autoFilename .= '<br /><span class="typo3-green"><b>Translations in specific external file: "'.$xmlArray['meta']['_ORIG_LANGUAGE_DATA'].'"</b></span>';
 			}
 			elseif (is_array($xmlArray['meta']['_ORIG_LANGUAGE_DATA']))	{
 				// Here if translations are inside main file
