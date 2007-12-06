@@ -153,10 +153,10 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @param	string		Filename to evaluate.
 	 * return boolean	True, if file should be processed.
 	 */
-	function checkCSH($filename='')	{
-		return TRUE;
-		$editLang = $this->MOD_SETTINGS['editLang'];
- 		return !($editLang!='default' && (!$filename || substr(basename($filename),0,13)=='locallang_csh' || substr(basename($filename),0,4)=='CSH:'));
+	function checkCSH($filename = '') {
+		return true;
+//		$editLang = $this->MOD_SETTINGS['editLang'];
+// 		return !($editLang!='default' && (!$filename || substr(basename($filename),0,13)=='locallang_csh' || substr(basename($filename),0,4)=='CSH:'));
 	}
 
 	/**
@@ -666,7 +666,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @param	boolean		If set, the field is always rendered as a textarea.
 	 * @return	string		HTML table row, <tr>
 	 */
-	function createEditForm_getItemRow($xmlArray, $relFileRef, $labelKey, $alwaysTextarea=FALSE)	{
+	function createEditForm_getItemRow($xmlArray, $relFileRef, $labelKey, $alwaysTextarea = false) {
 
 			// Initialize:
 		$dataArray = $xmlArray['data'];
@@ -1475,7 +1475,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @param	array		If you supply an array of locallang files they will be analysed and information cached (used for "Re-generate cached information".
 	 * @return	array		Statistical information
 	 */
-	function loadTranslationStatus($files=FALSE,$cshOK=FALSE)	{
+	function loadTranslationStatus($files = false, $cshOK = false) {
 		global $BE_USER;
 
 		$statInfo = array();
@@ -1491,15 +1491,15 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			$pt = t3lib_div::milliseconds();
 			$count = array();
 			foreach($files as $relFileRef)	{
-				if ($this->checkCSH($relFileRef) || $cshOK)	{
-					$this->createEditForm($relFileRef,FALSE);
+				if ($cshOK || $this->checkCSH($relFileRef)) {
+					$this->createEditForm($relFileRef, false);
 
-					$cKey = substr(basename($relFileRef),0,13)=='locallang_csh' ? 'CSH' : 'LABELS';
+					$cKey = substr(basename($relFileRef), 0, 13) == 'locallang_csh' ? 'CSH' : 'LABELS';
 
-					$count[$cKey]['ok']+= count($this->labelStatus[$editLang][$relFileRef]['ok']);
-					$count[$cKey]['changed']+= count($this->labelStatus[$editLang][$relFileRef]['changed']);
-					$count[$cKey]['unknown']+= count($this->labelStatus[$editLang][$relFileRef]['unknown']);
-					$count[$cKey]['new']+= count($this->labelStatus[$editLang][$relFileRef]['new']);
+					$count[$cKey]['ok'] += count($this->labelStatus[$editLang][$relFileRef]['ok']);
+					$count[$cKey]['changed'] += count($this->labelStatus[$editLang][$relFileRef]['changed']);
+					$count[$cKey]['unknown'] += count($this->labelStatus[$editLang][$relFileRef]['unknown']);
+					$count[$cKey]['new'] += count($this->labelStatus[$editLang][$relFileRef]['new']);
 				}
 			}
 
@@ -1518,9 +1518,8 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * Used to generate the HTML for "typo3conf/l10n/status.html" - see CLI script.
 	 */
 	function writeReportForAll()	{
-
+		@ob_end_clean();
 		ob_start();
-
 		$startTime = time();
 		echo '<h2>Translation Status '.t3lib_BEfunc::dateTime(time()).'</h2>';
 
@@ -1535,17 +1534,19 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		<td><b>Missing CSH:</b></td>
 		<td><b>Download:</b></td>
 		</tr>';
-
 			// Find all files:
-		$files = $this->getllxmlFiles();
+		$files = array();
+		foreach($this->extPathList as $path)	{
+			$files = array_merge($files, $this->getllxmlFiles(PATH_site . $path));
+		}
+//			$files = $this->getllxmlFiles();
 
 		t3lib_div::loadTCA('be_users');
 		foreach($GLOBALS['TCA']['be_users']['columns']['lang']['config']['items'] as $pair)	{
 			if ($pair[1])	{
-					// Re-generate st	atus
+					// Re-generate status
 				$this->MOD_SETTINGS['editLang'] = $pair[1];
-
-				$statInfo = $this->loadTranslationStatus($files,TRUE);
+				$statInfo = $this->loadTranslationStatus($files, true);
 
 				$header.= '<tr>
 				<td><a href="#'.$pair[1].'">'.$pair[0].'</a></td>
