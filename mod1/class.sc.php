@@ -328,7 +328,10 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	function renderTranslate()	{
 
 			// Selecting file:
-		$content .= 'Select extension: '.t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']) . '<br />';
+		$style = 'white-space: pre;';
+		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
+		$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
+		$content .= 'Select extension: '. $selExt . '<br />';
 		$content .= 'Select file: '.t3lib_BEfunc::getFuncMenu('','SET[llxml_files]',$this->MOD_SETTINGS['llxml_files'],$this->MOD_MENU['llxml_files']) . '<br />';
 		$content .= 'Language: '.t3lib_BEfunc::getFuncMenu('','SET[editLang]',$this->MOD_SETTINGS['editLang'],$this->MOD_MENU['editLang']);
 
@@ -1677,13 +1680,31 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				$dirs = t3lib_div::get_dirs($dir);
 				foreach ($dirs as $dirname) {
 					if ($dirname{0} != '.') {
-						$extList[$dir . $dirname] = $dirname;
+						$path = $dir . $dirname;
+						$version = $this->getExtVersion($dirname, $path);
+						if ($version) {
+							$str = str_pad($dirname, 32, ' ');
+							$extList[$path] = $str . '(' . $version . ')';
+						}
 					}
 				}
 			}
 		}
 		asort($extList);
 		return $extList;
+	}
+
+	/**
+	 * Obtains extension version
+	 *
+	 * @param	string	$extKey	Extension key
+	 * @param	string	$extPath	Extension path
+	 * @return	string	Extension version
+	 */
+	function getExtVersion($extKey, $extPath) {
+		$_EXTKEY = $extKey;
+		@include($extPath . '/ext_emconf.php');
+		return isset($EM_CONF[$_EXTKEY]['version']) ? $EM_CONF[$_EXTKEY]['version'] : '';
 	}
 }
 
