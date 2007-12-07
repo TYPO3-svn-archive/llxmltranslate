@@ -766,6 +766,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			if ($editLang == 'default')	{
 				$contextLabel = 'Context: <input name="'.htmlspecialchars('labelContext['.$relFileRef.']['.$labelKey.']').'" '.$GLOBALS['TBE_TEMPLATE']->formWidth(30).' value="'.htmlspecialchars(trim($xmlArray['meta']['labelContext'][$labelKey])).'" />';
 			} else {
+				if (is_array($dataArray['default'][$labelKey])) {
+					printf("D \$labelKey=$labelKey, \$editLang=$editLang, \$relFileRef=$relFileRef\n");
+				}
+				if (is_array($xmlArray['meta']['labelContext'][$labelKey])) {
+					printf("X \$labelKey=$labelKey, \$editLang=$editLang, \$relFileRef=$relFileRef\n");
+				}
 				$contextLabel = nl2br(htmlspecialchars($dataArray['default'][$labelKey])).
 					($xmlArray['meta']['labelContext'][$labelKey] ? '<hr/>Context: <em>'.htmlspecialchars($xmlArray['meta']['labelContext'][$labelKey]).'</em>' : '');
 			}
@@ -1258,17 +1264,16 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		if (is_array($dataArray))	{
 
 				// If no entry is found for the language key, then force a value depending on meta-data setting. By default an automated filename will be used:
-			if ($editLang!='default' && (!isset($dataArray['data'][$editLang])) || t3lib_div::_POST('_moveToExternalFile'))	{
-				$autoFileName = $dataArray['data'][$editLang] = t3lib_div::llXmlAutoFileName(PATH_site . $fileRef, $editLang);
-			} else {
-				$autoFileName = '';
-			}
-
+			$autoFileName = '';
+			if ($editLang!='default') {
 				// Looking for external storage for edit language if not default:
-			if ($editLang!='default')	{
+				$autoFileName = t3lib_div::llXmlAutoFileName(PATH_site . $fileRef, $editLang);
+				if (!isset($dataArray['data'][$editLang]) || t3lib_div::_POST('_moveToExternalFile') || @file_exists(PATH_site . $autoFileName)) {
+					$dataArray['data'][$editLang] = $autoFileName;
+				}
 
-					// If autoFileName, check if exists, if not, create:
-				if ($autoFileName)	{
+				// If autoFileName, check if exists, if not, create:
+//				if ($autoFileName)	{
 					$extFile = t3lib_div::getFileAbsFileName($dataArray['data'][$editLang]);
 					if ($extFile && !@is_file($extFile))	{
 						$XML = $this->createXML(array('data' => array()),TRUE);
@@ -1286,7 +1291,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 							} else $errorLog[$fileRef][] = 'ERROR, Tried to create "'.$extFile.'" but MD5 check failed!';
 						} else $errorLog[$fileRef][] = 'ERROR, path was not in typo3conf/ext/ or typo3conf/l10n/';
 					}
-				}
+//				}
 
 					// Looking for external file settings:
 				if (is_string($dataArray['data'][$editLang]) && strlen($dataArray['data'][$editLang]))	{
@@ -1318,7 +1323,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 								// Create XML and save file:
 							$XML = $this->createXML($extArray,TRUE);
-							if (md5(t3lib_div::getUrl($extFile)) != md5($XML))	{
+							if (t3lib_div::_POST('updateAllValues') || t3lib_div::getUrl($extFile) != md5($XML)) {
 								t3lib_div::writeFile($extFile, $XML);
 
 									// Checking if the localized file was saved as it should be:
