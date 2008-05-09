@@ -1687,15 +1687,17 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			$dir = PATH_site . $path;
 			if (is_dir($dir)) {
 				$dirs = t3lib_div::get_dirs($dir);
-				foreach ($dirs as $dirname) {
-					if ($dirname{0} != '.') {
-						$path = $dir . $dirname;
-						$version = $this->getExtVersion($dirname, $path);
-						if ($version) {
-							$str = str_pad($dirname, 32, ' ');
-							$extList[$path] = $str . '(' . $version . ')';
+				if (is_array($dirs)) {
+						foreach ($dirs as $dirname) {
+							if ($dirname{0} != '.') {
+								$path = $dir . $dirname;
+								$version = $this->getExtVersion($dirname, $path);
+								if ($version) {
+									$str = str_pad($dirname, 32, ' ');
+									$extList[$path] = $str . '(' . $version . ')';
+								}
+							}
 						}
-					}
 				}
 			}
 		}
