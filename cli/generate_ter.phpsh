@@ -35,7 +35,7 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 				// Get subdirectories in there (extension keys):
 			$extensionDirs = t3lib_div::get_dirs($thePath.$dir.'/');
 			chdir($thePath.$dir.'/');
-		
+
 				// Traverse extensions and make zip-files:
 			foreach($extensionDirs as $extKey) {
 
@@ -66,10 +66,10 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 	foreach($dirs as $dir)	{
 		$reg = NULL;
 		if (ereg('^(.)\/(.)\/(.+)-l10n\/$',$dir,$reg) && $reg[1].$reg[2] === $reg[3]{0}.$reg[3]{1})	{
-			
+
 				// Extract extension key:
 			$extKey = $reg[3];
-			
+
 				// Read package files:
 			$packages = t3lib_div::getFilesInDir($ter_path.$dir,'zip');
 
@@ -90,11 +90,11 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 		</languagepack>';
 				}
 			}
-			
+
 			$xml.= '
 	</languagePackIndex>
 </TERlanguagePackIndex>';
-			
+
 				// Write XML:
 			t3lib_div::writeFile($ter_path.$dir.'/'.$extKey.'-l10n.xml', $xml);
 		}

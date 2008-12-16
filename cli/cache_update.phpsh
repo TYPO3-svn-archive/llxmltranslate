@@ -10,7 +10,7 @@ define('TYPO3_cliMode', TRUE);
 
 	// Defining PATH_thisScript here: Must be the ABSOLUTE path of this script in the right context:
 	// This will work as long as the script is called by it's absolute path!
-define('PATH_thisScript',$_ENV['_']?$_ENV['_']:$_SERVER['_']);
+define('PATH_thisScript',$_ENV['_']?$_ENV['_']:($_SERVER['_']?$_SERVER['_']:__FILE__));
 
 	// Include configuration file:
 require(dirname(PATH_thisScript).'/conf.php');
@@ -26,7 +26,8 @@ require(t3lib_extMgm::extPath('llxmltranslate').'mod1/class.sc.php');
 
 // Make instance:
 $SOBE = t3lib_div::makeInstance('tx_llxmltranslate_module1');
+/* @var $SOBE tx_llxmltranslate_module1 */
 $SOBE->init();
-t3lib_div::writeFile(PATH_site.'typo3conf/l10n/status.html', $SOBE->writeReportForAll());
+t3lib_div::writeFile(PATH_site . 'typo3conf/l10n/status.html', $SOBE->writeReportForAll());
 
 ?>
