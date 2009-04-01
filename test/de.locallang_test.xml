@@ -9,7 +9,7 @@
 	<orig_hash type="array">
 		<languageKey index="de" type="array">
 			<label index="item1" type="integer">171710727</label>
-			<label index="item2" type="integer">37174697</label>
+			<label index="item2" type="integer">232143694</label>
 		</languageKey>
 	</orig_hash>
 	<orig_text type="array">
@@ -17,7 +17,7 @@
 			<label index="item1">Value 144 kjæsdfsd asdf sdfg</label>
 			<label index="item2">Value 2
 x
-Changed now!</label>
+Changed now! ds</label>
 		</languageKey>
 	</orig_text>
 </T3locallangExt>

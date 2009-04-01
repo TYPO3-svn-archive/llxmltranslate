@@ -1,10 +1,6 @@
-2008-12-16  Dmitry Dulepov  <dmitry@typo3.org>
+2008-04-01  Dmitry Dulepov  <dmitry@typo3.org>
 
-	* Small formatting changes
-
-2008-05-09	Dmitry Dulepov	<dmitry@typo3.org>
-
-	* Fixed: warning in mod1/class.sc.php if no subdirectories in the directory
+	* Fixed path issues in cli scripts
 
 2007-12-06	Dmitry Dulepov	<dmitry@typo3.org>
 

@@ -10,7 +10,7 @@ define('TYPO3_cliMode', TRUE);
 
 	// Defining PATH_thisScript here: Must be the ABSOLUTE path of this script in the right context:
 	// This will work as long as the script is called by it's absolute path!
-define('PATH_thisScript',$_ENV['_']?$_ENV['_']:$_SERVER['_']);
+define('PATH_thisScript', __FILE__);
 
 	// Include configuration file:
 require(dirname(PATH_thisScript).'/conf.php');
@@ -31,6 +31,7 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 	$dirs = t3lib_div::get_dirs($thePath);
 	foreach($dirs as $dir)	{
 		if (strlen($dir)==2 && $dir!='..')	{
+//echo "[P1] Looking to $dir...\n";
 
 				// Get subdirectories in there (extension keys):
 			$extensionDirs = t3lib_div::get_dirs($thePath.$dir.'/');
@@ -51,8 +52,10 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 					// Write file:
 				if (@is_dir($destDir))	{
 					$cmd = 'zip -r '.$destDir.$extKey.'-l10n-'.$dir.'.zip '.$extKey.'/';
-#					echo $cmd.chr(10);
-					exec($cmd);
+//					echo $cmd.chr(10);
+//echo "[P1] Executing $cmd...";
+					exec($cmd, $ar, $ret);
+//echo "$ret\n";
 				} else {
 					echo $destDir.' could not be created/found!'.chr(10);
 				}
@@ -65,6 +68,7 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 	$dirs = t3lib_div::removePrefixPathFromList($dirs,$ter_path);
 	foreach($dirs as $dir)	{
 		$reg = NULL;
+//echo "[P2] Looking to $dir...\n";
 		if (ereg('^(.)\/(.)\/(.+)-l10n\/$',$dir,$reg) && $reg[1].$reg[2] === $reg[3]{0}.$reg[3]{1})	{
 
 				// Extract extension key:
@@ -97,6 +101,7 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 
 				// Write XML:
 			t3lib_div::writeFile($ter_path.$dir.'/'.$extKey.'-l10n.xml', $xml);
+//echo "[P2] Written $ter_path$dir/$extKey-l10n.xml...\n";
 		}
 	}
 }

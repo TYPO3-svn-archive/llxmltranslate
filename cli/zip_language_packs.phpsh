@@ -10,7 +10,8 @@ define('TYPO3_cliMode', TRUE);
 
 	// Defining PATH_thisScript here: Must be the ABSOLUTE path of this script in the right context:
 	// This will work as long as the script is called by it's absolute path!
-define('PATH_thisScript',$_ENV['_']?$_ENV['_']:$_SERVER['_']);
+//define('PATH_thisScript',$_ENV['_']?$_ENV['_']:$_SERVER['_']);
+define('PATH_thisScript', __FILE__);
 
 	// Include configuration file:
 require(dirname(PATH_thisScript).'/conf.php');
@@ -31,11 +32,11 @@ if (@is_dir($thePath))	{
 	foreach($dirs as $dir)	{
 		if (strlen($dir)==2 && $dir!='..')	{
 			$cmd = 'zip -r '.$dir.'.zip '.$dir.'/';
-			#echo $cmd.chr(10);
-			exec($cmd);
+			exec($cmd, $a, $b);
+			//echo $cmd.' '.$b.chr(10);
 
 			$cmd = 'tar czf '.$dir.'.tgz '.$dir.'/';
-			#echo $cmd.chr(10);
+			//echo $cmd.chr(10);
 			exec($cmd);
 		}
 	}

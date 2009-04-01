@@ -2,7 +2,7 @@
 
 if (!defined('TYPO3_MODE'))	die('cannot include like that!');
 
-require($BACK_PATH.'template.php');
+require(dirname(__FILE__).'/'.$BACK_PATH.'template.php');
 require_once(PATH_t3lib.'class.t3lib_scbase.php');
 require_once(PATH_t3lib.'class.t3lib_diff.php');
 
@@ -1688,16 +1688,16 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			if (is_dir($dir)) {
 				$dirs = t3lib_div::get_dirs($dir);
 				if (is_array($dirs)) {
-					foreach ($dirs as $dirname) {
-						if ($dirname{0} != '.') {
-							$path = $dir . $dirname;
-							$version = $this->getExtVersion($dirname, $path);
-							if ($version) {
+    				foreach ($dirs as $dirname) {
+    					if ($dirname{0} != '.') {
+    					    $path = $dir . $dirname;
+						    $version = $this->getExtVersion($dirname, $path);
+						    if ($version) {
 								$str = str_pad($dirname, 32, ' ');
 								$extList[$path] = $str . '(' . $version . ')';
-							}
+					    	}
 						}
-					}
+				    }
 				}
 			}
 		}
