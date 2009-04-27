@@ -1,3 +1,7 @@
+2009-04-27  Dmitry Dulepov  <dmitry.dulepov@gmail.com>
+
+	* Fixed problem with frames in Gecko browsers
+
 2008-04-01  Dmitry Dulepov  <dmitry@typo3.org>
 
 	* Fixed path issues in cli scripts
