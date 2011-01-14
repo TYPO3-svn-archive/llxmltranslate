@@ -69,11 +69,14 @@
  *
  */
 
-
-	// DEFAULT initialization of a module [BEGIN]
+// DEFAULT initialization of a module [BEGIN]
 unset($MCONF);
 require('conf.php');
 require($BACK_PATH.'init.php');
+
+// Force Frame to utf8 charset
+$TYPO3_CONF_VARS['BE']['forceCharset'] = 'utf-8';
+
 require(t3lib_extMgm::extPath('llxmltranslate').'mod1/class.sc.php');
 $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
 
