@@ -504,7 +504,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					$allKeys = array_keys($xmlArray['data']['default']);
 					$mainKeys = array();
 					foreach($allKeys as $key)	{
-						$keyParts = explode('.',ereg_replace('^_','',$key));
+						$keyParts = explode('.',preg_replace('^_','',$key));
 						$mainKeys[] = $keyParts[0];
 					}
 					$mainKeys = array_unique($mainKeys);
@@ -663,7 +663,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 				// Link selector:
 			$selector = '';
-			if ($xmlArray['meta']['type'] == 'CSH' && ereg('\.seeAlso$',$labelKey))	{
+			if ($xmlArray['meta']['type'] == 'CSH' && preg_match('\.seeAlso$',$labelKey))	{
 				$opt = array();
 					$opt[] = '
 						<option value="">'.$LANG->getLL('see_also').'</option>';
@@ -692,14 +692,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			}
 
 				// Image selector:
-			if ($xmlArray['meta']['type'] == 'CSH' && ereg('\.image$',$labelKey))	{
+			if ($xmlArray['meta']['type'] == 'CSH' && preg_match('\.image$',$labelKey))	{
 				$opt = array();
 					$opt[] = '
 						<option value="">'.$LANG->getLL('image').'</option>';
 				$images = t3lib_div::getFilesInDir(PATH_site.dirname($relFileRef).'/cshimages','gif,jpg,jpeg,png',1);
 				$this->lastImages = array();
 				foreach($images as $link)	{
-					$link = ereg_replace('.*ext\/','EXT:',$link);
+					$link = preg_replace('.*ext\/','EXT:',$link);
 					$this->lastImages[] = $link;
 					$opt[] = '
 						<option value="'.$link.'">'.$link.'</option>';
@@ -723,7 +723,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					// Show images:
 				$images = t3lib_div::trimExplode(',',$dataArray['default'][$labelKey],1);
 				if (count($images))	{
-					$descrArray = explode(chr(10),$dataArray['default'][ereg_replace('^_','',$labelKey).'_descr'],count($images));
+					$descrArray = explode(chr(10),$dataArray['default'][preg_replace('^_','',$labelKey).'_descr'],count($images));
 					foreach($images as $kk => $ref)	{
 						$image = t3lib_div::getFileAbsFileName($ref);
 						if ($image)	{
@@ -875,7 +875,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			// Read uploaded file:
 		$uploadedTempFile = t3lib_div::upload_to_tempfile($GLOBALS['HTTP_POST_FILES']['upload_merge_file']['tmp_name']);
 		list($hash,$fileContent) = explode(':',t3lib_div::getUrl($uploadedTempFile),2);
-		$fileContent = ereg_replace('[[:space:]]','',$fileContent);
+		$fileContent = preg_replace('[[:space:]]','',$fileContent);
 #debug(array($fileContent));
 
 		t3lib_div::unlink_tempfile($uploadedTempFile);
