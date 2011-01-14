@@ -69,7 +69,7 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 	foreach($dirs as $dir)	{
 		$reg = NULL;
 //echo "[P2] Looking to $dir...\n";
-		if (ereg('^(.)\/(.)\/(.+)-l10n\/$',$dir,$reg) && $reg[1].$reg[2] === $reg[3]{0}.$reg[3]{1})	{
+		if (preg_match('^(.)\/(.)\/(.+)-l10n\/$',$dir,$reg) && $reg[1].$reg[2] === $reg[3]{0}.$reg[3]{1})	{
 
 				// Extract extension key:
 			$extKey = $reg[3];
@@ -87,7 +87,7 @@ if (@is_dir($thePath) && @is_dir($ter_path))	{
 	<languagePackIndex>';
 			foreach($packages as $packageFile)	{
 				$reg = NULL;
-				if (ereg('^'.$extKey.'-l10n-(..)\.zip$',$packageFile,$reg))	{
+				if (preg_match('^'.$extKey.'-l10n-(..)\.zip$',$packageFile,$reg))	{
 					$xml.= '
 		<languagepack language="'.$reg[1].'">
 			<md5>'.md5_file($ter_path.$dir.$packageFile).'</md5>

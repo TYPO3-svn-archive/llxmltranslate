@@ -1,5 +1,6 @@
 
-  # cat=basic//10; type=boolean; label= Hide extensions without xml files : Hide extensions without xml files in selectbox. Warning ! If you activate this option, display may become slow 
+  # cat=basic//10; type=boolean; label= LLL:EXT:llxmltranslate/mod1/locallang_mod.xml:conf_hide_extensions
+
 HideExtensionWithoutFiles = 0
 
 

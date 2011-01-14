@@ -1,10 +1,25 @@
-2009-04-27  Dmitry Dulepov  <dmitry.dulepov@gmail.com>
+2011-01-14	Yannick Pavard  <ypavard@infoglobe.ca>
+	* Extension configuration support multilingue version (for translator)
 
-	* Fixed problem with frames in Gecko browsers
+2011-01-12	Yannick Pavard  <ypavard@infoglobe.ca>
+	* Replace ereg_replace function by preg_replace (compatibility with PHP 5.3)
+        * Replace ereg function by preg_match
 
-2008-04-01  Dmitry Dulepov  <dmitry@typo3.org>
+2009-03-21	Yannick Pavard  <ypavard@infoglobe.ca>
+	* Added feature : (translate files)  Hide extensions in list without xml file
+	* Changed: (translate files) Update information in selecbox file after save submit
+	* Changed: (general) Css and color for better user friendly interface 
+	* Changed: (general) Expanded/collapsed feature for statistics, metada, log
+	* Changed: Bigger editable textarea for interface XML files.
+	* Changed: Move as sub-module in "user" module
+	* Language: Use xml files instead of Harcoded string
+	* Charset: Forced UTF-8 charset for frame only
+	* Fixed: Changed reference "setup/mod/locallang.php" to "setup/mod/locallang.xml"
+	* Changed: New icon for backend and extension
 
-	* Fixed path issues in cli scripts
+2008-05-09	Dmitry Dulepov	<dmitry@typo3.org>
+
+	* Fixed: warning in mod1/class.sc.php if no subdirectories in the directory
 
 2007-12-06	Dmitry Dulepov	<dmitry@typo3.org>
 

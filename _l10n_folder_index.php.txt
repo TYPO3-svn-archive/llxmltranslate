@@ -9,8 +9,8 @@ $langKey = t3lib_div::_GET('langKey');
 $extensions = t3lib_div::_GET('extList');
 
 if ($langKey)	{
-	if (ereg('^[a-z][a-z]$',$langKey))	{
-		if (!ereg('[^[:alnum:]_,]',$extensions))	{
+	if (preg_match('^[a-z][a-z]$',$langKey))	{
+		if (!preg_match('[^[:alnum:]_,]',$extensions))	{
 
 			if ($extensions)	{	// Send file stat for extensions listed:
 				$extensionsArray = explode(',',$extensions);
