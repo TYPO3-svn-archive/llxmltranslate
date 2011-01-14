@@ -89,7 +89,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				$this->MOD_MENU['addLang_'.$langKey] = '';
 			}
 			if ($langKey != 'default' || $this->translateDefault)	{
-				$this->MOD_MENU['editLang'][$langKey] = $langKey.(' ['.$LANG->sL('LLL:EXT:setup/mod/locallang.php:lang_'.$langKey).']');
+				$this->MOD_MENU['editLang'][$langKey] = $langKey.(' ['.$LANG->sL('LLL:EXT:setup/mod/locallang.xml:lang_'.$langKey).']');
 			}
 		}
 
@@ -98,8 +98,8 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			$langKey = $GLOBALS['BE_USER']->user['lang'];
 			if (!$langKey)	$langKey = 'default';
 			$this->MOD_MENU['editLang'] = array();
-			$this->MOD_MENU['editLang'][$langKey] = $langKey.(' ['.$LANG->sL('LLL:EXT:setup/mod/locallang.php:lang_'.$langKey).']');
-		}
+			$this->MOD_MENU['editLang'][$langKey] = $langKey.(' ['.$LANG->sL('LLL:EXT:setup/mod/locallang.xml:lang_'.$langKey).']');
+		} 
 
 			// Load translation status content:
 		$this->loadTranslationStatus();
@@ -112,7 +112,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 			// Setting files list:
 		$this->files = $this->getllxmlFiles_cached();
-		$this->MOD_MENU['llxml_files'] = array(''=>'');
+		$this->MOD_MENU['llxml_files'] = array('_INTERFACE'=> $LANG->getLL('selectbox_interface'));
 		foreach($this->files as $key => $value)	{
 			if (substr(basename($value),0,13)!='locallang_csh') {
 				$this->MOD_MENU['llxml_files'][$key] = $value;
@@ -125,25 +125,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			}
 		}
 		if (count($csh_array)) {
-			$this->MOD_MENU['llxml_files']['_CSH'] = 'CSH:';
+			$this->MOD_MENU['llxml_files']['_CSH'] = $LANG->getLL('selectbox_csh');
 			$this->MOD_MENU['llxml_files'] = array_merge($this->MOD_MENU['llxml_files'], $csh_array);
 		}
 
 			// Call parent menu config function:
 		parent::menuConfig();
-
-			// Add statistics:
-		$editLang = $this->MOD_SETTINGS['editLang'];
-		foreach($this->MOD_MENU['llxml_files'] as $key => $value)	{
-			if (is_array($this->labelStatus[$editLang][$value]))	{
-				$this->MOD_MENU['llxml_files'][$key] = $value.' ['.(count($this->labelStatus[$editLang][$value]['changed'])+count($this->labelStatus[$editLang][$value]['new'])).']';
-			}
-
-				// Remove CSH options if not available:
-			if (!$this->checkCSH($value))	{
-				unset($this->MOD_MENU['llxml_files'][$key]);
-			}
-		}
 	}
 
 	/**
@@ -164,7 +151,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	void
 	 */
 	function main()	{
-		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
+		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS,$LANG;
 
 			// Draw the header.
 		$this->doc = t3lib_div::makeInstance('noDoc');
@@ -176,8 +163,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			.typo3-green { color: #008000; }
 		';
 
-			// FORCING language to "default" and charset to utf-8 (since all locallang-XML files are in UTF-8!)
-		$GLOBALS['LANG']->init('default');
+		// FORCING charset to utf-8 (since all locallang-XML files are in UTF-8!)
 		$GLOBALS['LANG']->charSet = 'utf-8';
 
 			// JavaScript
@@ -188,10 +174,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				}
 		');
 
-		$this->content.=$this->doc->startPage('ll-XML translation');
-		$this->content.=$this->doc->header('ll-XML translation');
-		$this->content.=$this->doc->section('',t3lib_BEfunc::getFuncMenu('','SET[function]',$this->MOD_SETTINGS['function'],$this->MOD_MENU['function']));
+		$this->content.=$this->doc->startPage($LANG->getLL('title_llxml'));
+		$this->content.=$this->doc->header($LANG->getLL('header_llxml'));
 		$this->content.=$this->doc->divider(5);
+		$this->content.=$this->doc->section('',t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', '', $this->doc->backPath,'').t3lib_BEfunc::getFuncMenu('','SET[function]',$this->MOD_SETTINGS['function'],$this->MOD_MENU['function']));
+		
+		$this->content.= $GLOBALS['BE_USER']->isAdmin() ? $LANG->getLL('select_language').' '.t3lib_BEfunc::getFuncMenu('','SET[editLang]',$this->MOD_SETTINGS['editLang'],$this->MOD_MENU['editLang']):'';
 
 			// Render content:
 		$this->moduleContent();
@@ -216,23 +204,26 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 */
 	function moduleContent()	{
 
-			// Getting CSH:
-		$csh = t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_'.$this->MOD_SETTINGS['function'], $this->doc->backPath,'|<br/>');
+		global $LANG;
+		// Getting CSH:
+		$csh = t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_'.$this->MOD_SETTINGS['function'], $this->doc->backPath,'');
 
 			// Function menu branching:
 		switch((string)$this->MOD_SETTINGS['function'])	{
 			case 1:
-				$this->content.=$this->doc->section('Settings:',$csh.$this->renderSettings(),0,1);
+				$this->content.=$this->doc->section($LANG->getLL('function_settings'),$csh.$this->renderSettings(),0,1);
 			break;
 			case 2:
 
-					// Saving submitted data:
+				// Saving submitted data:
 				$result = $this->saveSubmittedData();
-				if ($result)	{
-					$this->content.='<h3>SAVING MESSAGES:</h3>'.t3lib_div::view_array($result);
-				}
+				
+				// Re-generating file list:
+				$files = $this->getllxmlFiles_cached(TRUE);
 
-				$this->content.=$this->doc->section('Translate:',$csh.$this->renderTranslate(),0,1);
+				// Re-generate status
+				$statInfo = $this->loadTranslationStatus($files);
+				$this->content.= $this->doc->section($LANG->getLL('function_translateFile'),$csh.$this->renderTranslate($result),0,1);
 			break;
 			case 4:
 
@@ -241,15 +232,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 					// Re-generate status
 				$statInfo = $this->loadTranslationStatus($files);
-
-				$this->content.=$this->doc->section('Re-generate cached content:',
-						$csh.
-						'Done. <br/>'.
-						'Statistics:<br/>'.
-						t3lib_div::view_array($statInfo).
-						'Select another entry in the menu above! <hr/>'.
-						($GLOBALS['BE_USER']->isAdmin() ? t3lib_BEfunc::getFuncMenu('','SET[editLang]',$this->MOD_SETTINGS['editLang'],$this->MOD_MENU['editLang']) : '')
-					,0,1);
+				
+				$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
+				$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
+		
+				$this->content.= $this->doc->section($LANG->getLL('function_generateCached'),
+						$LANG->getLL('select_extension'). $selExt . '<br />'.
+						$csh.$LANG->getLL('statistics').'<br />'.
+						t3lib_div::view_array($statInfo),0,1);
 			break;
 			case 10:	// Export
 				$this->content.=$this->doc->section('Export:',$csh.$this->renderExport(),0,1);
@@ -325,15 +315,15 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	string		HTML
 	 */
 	function renderTranslate()	{
+		global $LANG;
 
 			// Selecting file:
 		$style = 'white-space: pre;';
 		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
 		$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
-		$content .= 'Select extension: '. $selExt . '<br />';
-		$content .= 'Select file: '.t3lib_BEfunc::getFuncMenu('','SET[llxml_files]',$this->MOD_SETTINGS['llxml_files'],$this->MOD_MENU['llxml_files']) . '<br />';
-		$content .= 'Language: '.t3lib_BEfunc::getFuncMenu('','SET[editLang]',$this->MOD_SETTINGS['editLang'],$this->MOD_MENU['editLang']);
-
+		$content .= $LANG->getLL('select_extension'). $selExt . '<br />';
+		$content .= $LANG->getLL('select_file').t3lib_BEfunc::getFuncMenu('','SET[llxml_files]',$this->MOD_SETTINGS['llxml_files'],$this->MOD_MENU['llxml_files']);
+		
 		if ($this->files[$this->MOD_SETTINGS['llxml_files']])	{
 			$formcontent = '';
 
@@ -362,9 +352,10 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	string		HTML
 	 */
 	function renderExport()	{
+		global $LANG;
 
 			// Adding language selector:
-		$content.='Language: '.t3lib_BEfunc::getFuncMenu('','SET[editLang]',$this->MOD_SETTINGS['editLang'],$this->MOD_MENU['editLang']);
+		$content.=$LANG->getLL('select_export_file');
 
 		if (!t3lib_div::_POST('_export'))	{
 				// Create file selector box:
@@ -396,7 +387,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					',$opt).'
 				</select>
 				<br/>
-				<input type="submit" name="_export" value="Export" />
+				<input type="submit" name="_export" value="'.$LANG->getLL('export').'" />
 			';
 
 			return $content;
@@ -421,8 +412,8 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 									$outputArray['files'][$fileRef] = $dat['data'][$this->MOD_SETTINGS['editLang']];
 									$outputArray['orig_hash'][$fileRef] = $dat['orig_hash'][$this->MOD_SETTINGS['editLang']];
 								}
-							} else die('File '.$fileRef.' offered no XML output!');
-						} else die('File '.$fileRef.' was invalid or did not exist!');
+							} else die(sprintf($LANG->getLL('no_xml_output'),$fileRef));
+						} else die(sprintf($LANG->getLL('invalid_not_exist'),$fileRef));
 					}
 				}
 
@@ -446,9 +437,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	string		HTML
 	 */
 	function renderMerge()	{
-
-			// Adding language selector:
-		$content.='Language: '.t3lib_BEfunc::getFuncMenu('','SET[editLang]',$this->MOD_SETTINGS['editLang'],$this->MOD_MENU['editLang']);
+		global $LANG;
 
 		if (!t3lib_div::_POST('_uploaded'))	{
 
@@ -458,13 +447,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			foreach($this->MOD_MENU['llxml_files'] as $fileRef => $label)	{
 				$opt[] = '<option value="'.htmlspecialchars($fileRef).'">'.htmlspecialchars($label).'</option>';
 			}
-				// Put form together:
-			$content.= '
-				<br/>
-					Upload merge-file: <input type="file" size="60" name="upload_merge_file" /><br/>
-					Select specific file: <select name="specFile">'.implode('',$opt).'</select><br/>
-					Show only which files are inside: <input type="checkbox" name="showFileIndexOnly" value="1" /><br/>
-					<input type="submit" name="_uploaded" value="Upload merge-file" />
+			
+				// Put form together:		
+			$content.=  '
+					'.$LANG->getLL('select_extension'). $selExt . '<br />
+					'.$LANG->getLL('select_specific_file').'<select name="specFile">'.implode('',$opt).'</select><br/>
+					'.$LANG->getLL('upload_merge').'<input type="file" size="60" name="upload_merge_file" /><br/>
+					'.$LANG->getLL('show_only_file').'<input type="checkbox" name="showFileIndexOnly" value="1" /><br/>
+					<input type="submit" name="_uploaded" value="'.$LANG->getLL('upload_merge_file_button').'" />
 				';
 		} else {
 			$content.= $this->createMergeForm();
@@ -472,15 +462,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 		return $content;
 	}
-
-
-
-
-
-
-
-
-
 
 	/*************************
 	 *
@@ -496,7 +477,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	string		HTML content
 	 */
 	function createEditForm($relFileRef,$saveStatus=TRUE)	{
-		global $BE_USER, $TCA;
+		global $BE_USER, $TCA,$LANG;
 
 			// Read file, parse XML:
 		$xmlArray = $this->getXMLdata($relFileRef);
@@ -573,13 +554,13 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					if (count($allKeys))	{
 						$itemRow.= '
 							<tr>
-								<td colspan="4" bgcolor="#ff6600"><b>REMAINING:</b></td>
+								<td colspan="4" bgcolor="#ff6600"><b>'.$LANG->getLL('remaining').'</b></td>
 							</tr>';
 						foreach($allKeys as $remKey => $temp)	{
 							$itemRow.= $this->createEditForm_getItemRow($xmlArray,$relFileRef,$remKey);
 						}
 					}
-				} else {	// Normal:
+				} else { // Normal:
 					foreach($xmlArray['data']['default'] as $labelKey => $labelValue)	{
 						if ($editLang=='default' || substr($labelKey,0,1)!='_')	{
 							$itemRow.= $this->createEditForm_getItemRow($xmlArray,$relFileRef,$labelKey);
@@ -588,7 +569,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				}
 			}
 
-				// Update label status:
+			// Update label status:
 			$this->labelStatus['_FILETYPE'][$relFileRef] = $xmlArray['meta']['type'];
 			if ($saveStatus)	$BE_USER->setAndSaveSessionData('tx_llxmltranslate:status', $this->labelStatus);
 
@@ -606,15 +587,15 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					<td>'.htmlspecialchars(count($this->labelStatus[$editLang][$relFileRef]['ok'])).'</td>
 				</tr>
 				<tr bgcolor="#6666ff">
-					<td><b>New</b></td>
+					<td><b>'.$LANG->getLL('caption_new').'</b></td>
 					<td>'.htmlspecialchars(count($this->labelStatus[$editLang][$relFileRef]['new'])).'</td>
 				</tr>
 				<tr bgcolor="#ff6666">
-					<td><b>Changed:</b></td>
+					<td><b>'.$LANG->getLL('caption_changed').'</b></td>
 					<td>'.htmlspecialchars(count($this->labelStatus[$editLang][$relFileRef]['changed'])).'</td>
 				</tr>
 				<tr bgcolor="#ff6600">
-					<td><b>Unknown:</b></td>
+					<td><b>'.$LANG->getLL('caption_unknown').'</b></td>
 					<td>'.htmlspecialchars(count($this->labelStatus[$editLang][$relFileRef]['unknown'])).'</td>
 				</tr>
 			</table>
@@ -644,7 +625,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					}
 				}
 				$output.='
-				<h4>Image Overview ("'.dirname($relFileRef).'/cshimages/"):</h4>
+				<h4>'.sprintf($LANG->getLL('image_overview'),dirname($relFileRef)).'</h4>
 				'.(count($imageRows) ? '<table border="1">
 					'.implode('',$imageRows).'
 				</table>
@@ -666,6 +647,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	string		HTML table row, <tr>
 	 */
 	function createEditForm_getItemRow($xmlArray, $relFileRef, $labelKey, $alwaysTextarea = false) {
+		GLOBAL $LANG;
 
 			// Initialize:
 		$dataArray = $xmlArray['data'];
@@ -684,9 +666,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			if ($xmlArray['meta']['type'] == 'CSH' && ereg('\.seeAlso$',$labelKey))	{
 				$opt = array();
 					$opt[] = '
-						<option value="">[ SEE ALSO ]</option>';
+						<option value="">'.$LANG->getLL('see_also').'</option>';
 					$opt[] = '
-						<option value="[Link Title] | http://..../">[ ADD REGULAR URL ]</option>';
+						<option value="[Link Title] | http://..../">'.$LANG->getLL('add_regular_url').'</option>';
 				sort($this->cshLinks);
 				foreach($this->cshLinks as $link)	{
 					$opt[] = '
@@ -713,7 +695,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			if ($xmlArray['meta']['type'] == 'CSH' && ereg('\.image$',$labelKey))	{
 				$opt = array();
 					$opt[] = '
-						<option value="">[ IMAGE ]</option>';
+						<option value="">'.$LANG->getLL('image').'</option>';
 				$images = t3lib_div::getFilesInDir(PATH_site.dirname($relFileRef).'/cshimages','gif,jpg,jpeg,png',1);
 				$this->lastImages = array();
 				foreach($images as $link)	{
@@ -751,11 +733,11 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 							$selector.='
 								<hr/>'.$ref.'<br/>
 								<img src="'.$GLOBALS['BACK_PATH'].$imageRelPath.'" alt="" style="border:1px solid black;" />
-								<p><b>Description:</b> <em>'.htmlspecialchars($descrArray[$kk]).'</em></p>';
+								<p><b>'.$LANG->getLL('description').'</b> <em>'.htmlspecialchars($descrArray[$kk]).'</em></p>';
 						} else {
 							$selector.='
-								<hr/>'.$ref.' <b>NOT FOUND!</b><br/>
-								<p><b>Description:</b> <em>'.htmlspecialchars($descrArray[$kk]).'</em></p>';
+								<hr/>'.$ref.' <b>'.$LANG->getLL('not_found').'</b><br/>
+								<p><b>'.$LANG->getLL('description').'</b> <em>'.htmlspecialchars($descrArray[$kk]).'</em></p>';
 						}
 					}
 				}
@@ -763,7 +745,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 				// Default description:
 			if ($editLang == 'default')	{
-				$contextLabel = 'Context: <input name="'.htmlspecialchars('labelContext['.$relFileRef.']['.$labelKey.']').'" '.$GLOBALS['TBE_TEMPLATE']->formWidth(30).' value="'.htmlspecialchars(trim($xmlArray['meta']['labelContext'][$labelKey])).'" />';
+				$contextLabel = $LANG->getLL('context').'<input name="'.htmlspecialchars('labelContext['.$relFileRef.']['.$labelKey.']').'" '.$GLOBALS['TBE_TEMPLATE']->formWidth(30).' value="'.htmlspecialchars(trim($xmlArray['meta']['labelContext'][$labelKey])).'" />';
 			} else {
 				if (is_array($dataArray['default'][$labelKey])) {
 					printf("D \$labelKey=$labelKey, \$editLang=$editLang, \$relFileRef=$relFileRef\n");
@@ -772,7 +754,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					printf("X \$labelKey=$labelKey, \$editLang=$editLang, \$relFileRef=$relFileRef\n");
 				}
 				$contextLabel = nl2br(htmlspecialchars($dataArray['default'][$labelKey])).
-					($xmlArray['meta']['labelContext'][$labelKey] ? '<hr/>Context: <em>'.htmlspecialchars($xmlArray['meta']['labelContext'][$labelKey]).'</em>' : '');
+					($xmlArray['meta']['labelContext'][$labelKey] ? '<hr/>'.$LANG->getLL('context').'<em>'.htmlspecialchars($xmlArray['meta']['labelContext'][$labelKey]).'</em>' : '');
 			}
 			$tCells[] = '<td>'.
 				$contextLabel.
@@ -787,11 +769,11 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				$new_hash = t3lib_div::md5int($dataArray['default'][$labelKey]);
 				if ($editLang!='default' && $orig_hash != $new_hash)	{
 					if (!$orig_hash)	{
-						$st = '?';
+						$st = $LANG->getLL('status_interrogation');
 						$bgcolor = '#ff6600';
 						$this->labelStatus[$editLang][$relFileRef]['unknown'][] = $labelKey;
 					} else {
-						$st = 'Changed!';
+						$st = $LANG->getLL('status_changed');
 						$bgcolor = '#ff6666';
 						$this->labelStatus[$editLang][$relFileRef]['changed'][] = $labelKey;
 
@@ -805,12 +787,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 						}
 					}
 				} else {
-					$st = 'OK';
+					$st = $LANG->getLL('status_ok');
 					$bgcolor = '#009900';
 					$this->labelStatus[$editLang][$relFileRef]['ok'][] = $labelKey;
 				}
 			} else {
-				$st = 'NEW';
+				$st = $LANG->getLL('status_new');
 				$bgcolor = '#6666ff';
 				$this->labelStatus[$editLang][$relFileRef]['new'][] = $labelKey;
 			}
@@ -854,6 +836,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	string		HTML table row.
 	 */
 	function createEditForm_getItemHead()	{
+		GLOBAL $LANG;
 		if ($this->MOD_SETTINGS['editLang'])	{
 
 				// Width of each label column is set by a clear-gif:
@@ -884,7 +867,11 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	[type]		...
 	 */
 	function createMergeForm()	{
+		GLOBAL $LANG;
 
+			// Total files
+		$totalFile = 0;
+		
 			// Read uploaded file:
 		$uploadedTempFile = t3lib_div::upload_to_tempfile($GLOBALS['HTTP_POST_FILES']['upload_merge_file']['tmp_name']);
 		list($hash,$fileContent) = explode(':',t3lib_div::getUrl($uploadedTempFile),2);
@@ -909,7 +896,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 							$errors = array();
 
 							if (!$specFile || !strcmp($specFile,$fileRef))	{
-								$formcontent.='<h4>File: '.htmlspecialchars($fileRef).'</h4>';
+								$formcontent.='<h4 id="merge">'.$LANG->getLL('merge_file').' '.htmlspecialchars($fileRef).'</h4>';
 
 								if (in_array($fileRef, $this->files))	{
 
@@ -918,13 +905,11 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 									$rows = array();
 									$rows[] = '
-										<tr class="bgColor5" style="font-weight: bold;">
-											<td>Label key:</td>
-											<td>Default:'.$clearGif.'</td>
-											<td>'.$editLang.' (local):'.$clearGif.'</td>
-											<td>Merge:</td>
-											<td>'.$editLang.' (from merge file):</td>
-											<td>Diff. between local and merge-value:'.$clearGif.'</td>
+										<tr class="bgColor5">
+											<th>'.$LANG->getLL('merge_point').'</td>
+											<th style="width:50%;">'.$LANG->getLL('form_default').$clearGif.'</td>
+											<th>'.$editLang.' '.$LANG->getLL('local').$clearGif.'</td>
+											<th>'.$editLang.' '.$LANG->getLL('from_merge_point').'</td>
 										</tr>
 									';
 
@@ -979,7 +964,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 												';
 											}
 
-										} else $errors[] = 'No key with name "'.$labelKey.'"';
+										} else $errors[] = sprintf($LANG->getLL('no_key_with_name'),$labelKey);
 									}
 
 
@@ -990,9 +975,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 											<table border="1">
 												'.implode('', $rows).'
 											</table>'.
-											t3lib_div::view_array($errors) : 'Changes to submit: '.(count($rows)-1));
+											t3lib_div::view_array($errors) : $LANG->getLL('change_to_submit').' '.(count($rows)-1));
 									} else {
-										$formcontent.='No changes to this file<br/>';
+										$formcontent.= $LANG->getLL('no_change_file').'<br/>';
 									}
 								} else {
 									$formcontent.='
@@ -1047,6 +1032,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	array		Save and Error logs
 	 */
 	function saveSubmittedData()	{
+		GLOBAL $LANG;
 		if (t3lib_div::_POST('_save'))	{
 
 				// Form data:
@@ -1095,7 +1081,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 														$labelValue = str_replace(chr(13),'',trim($labelValue));
 														if ($updateAllValues || strcmp($labelValue, $newValueArray[$labelKey]))	{
 															$newValueArray[$labelKey] = $labelValue;
-															$saveLog[$fileRef]['data'][$langKey][$labelKey] = $labelValue;
+															$saveLog[$fileRef][$LANG->getLL('savelog_data')][$langKey][$labelKey] = $labelValue;
 
 															$save = TRUE;
 														}
@@ -1106,7 +1092,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 																$origHash = t3lib_div::md5int($xmlArray['data']['default'][$labelKey]);
 																if ($updateAllValues || $origHash != $xmlArray['orig_hash'][$langKey][$labelKey])	{
 																	$xmlArray['orig_hash'][$langKey][$labelKey] = $origHash;
-																	$saveLog[$fileRef]['orig_hash'][$langKey][$labelKey] = 'UPDATED';
+																	$saveLog[$fileRef][$LANG->getLL('savelog_orig_hash')][$langKey][$labelKey] = $LANG->getLL('savelog_updated');
 
 																	$save = TRUE;
 																}
@@ -1114,7 +1100,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 																#debug(array($xmlArray['orig_text'][$langKey][$labelKey] , $xmlArray['data']['default'][$labelKey]));
 																if ($updateAllValues || $xmlArray['orig_text'][$langKey][$labelKey] != $xmlArray['data']['default'][$labelKey])	{
 																	$xmlArray['orig_text'][$langKey][$labelKey] = $xmlArray['data']['default'][$labelKey];
-																	$saveLog[$fileRef]['orig_text'][$langKey][$labelKey] = 'UPDATED';
+																	$saveLog[$fileRef][$LANG->getLL('savelog_orig_text')][$langKey][$labelKey] = $LANG->getLL('savelog_updated');
 
 																	$save = TRUE;
 																}
@@ -1124,7 +1110,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 															unset($xmlArray['orig_text']['default']);
 														}
 													}
-												} else $errorLog[$fileRef][] = 'Label for "'.$labelKey.'" was not found as a default label!';
+												} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_label_not_found'),$labelKey);
 											}
 
 												// If set, then transfer the new array:
@@ -1139,7 +1125,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 														foreach($diff as $nonAllowedKey)	{
 															$newValueArray[$nonAllowedKey] = $xmlArray['data'][$langKey][$nonAllowedKey];
 														}
-														$errorLog[$fileRef][] = array('Found illegal keys in array. (See below). Preserving them anyways.',$diff);
+														$errorLog[$fileRef][] = array($LANG->getLL('error_illegal_key'),$diff);
 													}
 
 														// Setting new (newly ordered) array:
@@ -1152,18 +1138,18 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 														unset($xmlArray['data'][$langKey][$labelKey]);
 														unset($xmlArray['orig_hash'][$langKey][$labelKey]);
 														unset($xmlArray['orig_text'][$langKey][$labelKey]);
-														$saveLog[$fileRef]['Messages']['REMOVED BLANKS:'][] = $labelKey;
+														$saveLog[$fileRef][$LANG->getLL('savelog_messages',true)][$LANG->getLL('message_removed_blanks',true)][] = $labelKey;
 													}
 												}
 
 													// Setting log messages:
-												$saveLog[$fileRef]['Messages'][] = 'Serialized lgd: '.strlen(serialize($xmlArray['data'][$langKey]));
-												$saveLog[$fileRef]['Messages'][] = 'Serialized hash: '.md5(serialize($xmlArray['data'][$langKey]));
+												$saveLog[$fileRef][$LANG->getLL('savelog_messages',true)][] = $LANG->getLL('serialized_lgd').' '.strlen(serialize($xmlArray['data'][$langKey]));
+												$saveLog[$fileRef][$LANG->getLL('savelog_messages',true)][] = $LANG->getLL('serialized_hash').' '.md5(serialize($xmlArray['data'][$langKey]));
 											}
-										} else $errorLog[$fileRef][] = 'Labels for "'.$langKey.'" was not an array!';
-									} else $errorLog[$fileRef][] = '"'.$langKey.'" was not a language key (or not the edit-language selected)!';
+										} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_label_not_found'),$langKey);
+									} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_not_language_key'),$langKey);
 								}
-							} else $errorLog[$fileRef][] = 'POST data for "'.$fileRef.'" file was not an array!';
+							} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_post_data_not_array'),$fileRef);
 
 								// Context?
 							if (is_array($labelContext[$fileRef]))	{
@@ -1172,7 +1158,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 									if (!strlen(trim($vv)))	unset($xmlArray['meta']['labelContext'][$kk]);
 								}
 								$save = TRUE;
-								$saveLog[$fileRef]['labelContext'] = 'UPDATED';
+								$saveLog[$fileRef]['labelContext'] = $LANG->getLL('savelog_updated');
 							}
 
 								// Saving modifications:
@@ -1180,15 +1166,15 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 									// Create / Save XML:
 								$this->saveXMLdata($fileRef, $xmlArray, $saveLog, $errorLog);
 							}
-						} else $errorLog[$fileRef][] = '"'.$fileRef.'" did not contain a proper XML array!';
-					} else $errorLog[$fileRef][] = 'File reference not valid! ('.$fileRef.')';
+						} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_file_not_contain_xml_array'),$fileRef);
+					} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_file_reference_not_valid'),$fileRef);
 				}
-			} else $errorLog['_ERROR'][] = 'Input POST data was not an array';
-
+			} else $errorLog[$LANG->getLL('table_errors')][] = $LANG->getLL('error_input_post_not_array');
+			
 				// Return logs:
 			return array(
-				'SAVE_LOG' => $saveLog,
-				'ERRORS' => $errorLog
+				$LANG->getLL('table_savelog') => $saveLog,
+				$LANG->getLL('table_errors') => $errorLog
 			);
 		}
 	}
@@ -1201,7 +1187,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	array	Array (contents of XML file)
 	 */
 	function getXMLdata($fileRef)	{
-
+		GLOBAL $LANG;
 			// Getting MAIN ll-XML file content:
 		$dataArray = t3lib_div::xml2array(t3lib_div::getUrl(PATH_site.$fileRef));
 		$editLang = $this->MOD_SETTINGS['editLang'];
@@ -1228,7 +1214,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			#		echo t3lib_div::view_array(array('Notice: auto-created file not found, will be created during save.',$autoFileName));
 					$extArray = array();
 				} else {
-					echo t3lib_div::view_array(array('ERROR!: could not find referenced file, please fix',$dataArray['data'][$editLang]));
+					echo t3lib_div::view_array(array($LANG->getLL('error_not_find_reference'),$dataArray['data'][$editLang]));
 					$extArray = array();
 				}
 
@@ -1237,7 +1223,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				$dataArray['orig_text'][$editLang] = is_array($extArray['orig_text'][$editLang]) ? $extArray['orig_text'][$editLang] : array();
 			}
 		} else {
-			echo $fileRef.' did not contain parsed XML! Output:';
+			echo sprintf($LANG->getLL('error_file_not_contain_xml_array_output'),$fileRef);
 			echo '<hr/>'.$dataArray.'<hr/>';
 		}
 
@@ -1255,6 +1241,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	void
 	 */
 	function saveXMLdata($fileRef,$xmlArray, &$saveLog, &$errorLog)	{
+		GLOBAL $LANG;
 
 			// Getting MAIN ll-XML file content and editing language:
 		$dataArray = t3lib_div::xml2array(t3lib_div::getUrl(PATH_site . $fileRef));
@@ -1286,9 +1273,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 							t3lib_div::writeFile($extFile, $XML);
 
 							if (md5(t3lib_div::getUrl($extFile)) == md5($XML))	{
-								$saveLog[$fileRef]['CREATED NEW EXTERNAL LANGUAGE FILE'] = substr($extFile,strlen(PATH_site));
-							} else $errorLog[$fileRef][] = 'ERROR, Tried to create "'.$extFile.'" but MD5 check failed!';
-						} else $errorLog[$fileRef][] = 'ERROR, path was not in typo3conf/ext/ or typo3conf/l10n/';
+								$saveLog[$fileRef][$LANG->getLL('create_new_external_file',true)] = substr($extFile,strlen(PATH_site));
+							} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_tried_to_create'),$extFile);
+						} else $errorLog[$fileRef][] = $LANG->getLL('error_path_not_in_typo3conf');
 					}
 //				}
 
@@ -1298,7 +1285,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 						// Getting the file:
 					$extFile = t3lib_div::getFileAbsFileName($dataArray['data'][$editLang]);
 					if ($extFile && @is_file($extFile))	{
-						$saveLog[$fileRef]['Messages'][] = 'Found external file: '.$dataArray['data'][$editLang];
+						$saveLog[$fileRef]['Messages'][] = $LANG->getLL('error_found_external_file').' '.$dataArray['data'][$editLang];
 
 							// Reading XML content out of file:
 						$extArray = t3lib_div::xml2array(t3lib_div::getUrl($extFile));
@@ -1327,17 +1314,17 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 									// Checking if the localized file was saved as it should be:
 								if (md5(t3lib_div::getUrl($extFile)) == md5($XML))	{
-									$saveLog[$fileRef]['SAVING EXTERNAL'] = 'DONE';
+									$saveLog[$fileRef][$LANG->getLL('savelog_saving_external')] = $LANG->getLL('done_upper');
 								} else {
 									$tempFile = t3lib_div::tempnam('llxml_');
 									t3lib_div::writeFile($tempFile, $XML);
-									$errorLog[$fileRef][] = 'SAVED CONTENT DID NOT match what was saved to the file (EXTERNAL FILE)! Write access problem to "'.$extFile.'"? (backup file is saved to "'.$tempFile.'"). Recovery suggestion: Fix write permissions for the file and re-submit page.';
+									$errorLog[$fileRef][] = sprintf($LANG->getLL('error_write_access_problem_external'),$extFile,$tempFile);
 								}
 							} else {
-								$saveLog[$fileRef]['SAVING EXTERNAL'] = 'Not needed, XML content didn\'t change.';
+								$saveLog[$fileRef][$LANG->getLL('savelog_saving_external')] = $LANG->getLL('savelog_xml_content_not_change');
 							}
-						} else $errorLog[$fileRef][] = 'ERROR, could not find XML in file: '.$dataArray['data'][$editLang];
-					} else $errorLog[$fileRef][] = 'ERROR, could not find file: '.$dataArray['data'][$editLang];
+						} else $errorLog[$fileRef][] = $LANG->getLL('error_could_not_find_xml').' '.$dataArray['data'][$editLang];
+					} else $errorLog[$fileRef][] = $LANG->getLL('error_could_not_find_file').' '.$dataArray['data'][$editLang];
 				}
 			}
 
@@ -1348,7 +1335,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 				// Save MAIN file:
 			if (!@is_writeable(PATH_site . $fileRef)) {
-				$errorLog[$fileRef][] = 'Warning: ' . $fileRef . ' is not writable! Old translations (if any) will be left in the file!';
+				$errorLog[$fileRef][] = sprintf($LANG->getLL('error_file_not_writable'),$fileRef);
 			}
 			else {
 				$XML = $this->createXML($xmlArray);
@@ -1357,17 +1344,17 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 						// Checking if the main file was saved as it should be:
 					if (md5(t3lib_div::getUrl(PATH_site.$fileRef)) == md5($XML))	{
-						$saveLog[$fileRef]['SAVING MAIN'] = 'DONE';
+						$saveLog[$fileRef][$LANG->getLL('savelog_saving_main')] = $LANG->getLL('done_upper');
 					} else {
 						$tempFile = t3lib_div::tempnam('llxml_');
 						t3lib_div::writeFile($tempFile, $XML);
-						$errorLog[$fileRef][] = 'SAVED CONTENT DID NOT match what was saved to the file! Write access problem to "'.$fileRef.'"? (backup file is saved to "'.$tempFile.'"). Recovery suggestion: Fix write permissions for the file and re-submit page.';
+						$errorLog[$fileRef][] = sprintf($LANG->getLL('savelog_saving_main'),$fileRef,$tempFile);
 					}
 				} else {
-					$saveLog[$fileRef]['SAVING MAIN'] = 'Not needed, XML content didn\'t change.';
+					$saveLog[$fileRef][$LANG->getLL('savelog_saving_main')] = $LANG->getLL('savelog_xml_content_not_change');
 				}
 			}
-		} else die('WRONG FILE: '.$fileRef);
+		} else die($LANG->getLL('warning_wrong_file').' '.$fileRef);
 	}
 
 	/**
@@ -1397,14 +1384,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 		return $XML;
 	}
-
-
-
-
-
-
-
-
 
 
 	/*************************
@@ -1480,7 +1459,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	array		Statistical information
 	 */
 	function loadTranslationStatus($files = false, $cshOK = false) {
-		global $BE_USER;
+		global $BE_USER,$LANG;
 
 		$statInfo = array();
 		$editLang = $this->MOD_SETTINGS['editLang'];
@@ -1500,17 +1479,17 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 					$cKey = substr(basename($relFileRef), 0, 13) == 'locallang_csh' ? 'CSH' : 'LABELS';
 
-					$count[$cKey]['ok'] += count($this->labelStatus[$editLang][$relFileRef]['ok']);
-					$count[$cKey]['changed'] += count($this->labelStatus[$editLang][$relFileRef]['changed']);
-					$count[$cKey]['unknown'] += count($this->labelStatus[$editLang][$relFileRef]['unknown']);
-					$count[$cKey]['new'] += count($this->labelStatus[$editLang][$relFileRef]['new']);
+					$count[$cKey][$LANG->getLL('caption_ok')] += count($this->labelStatus[$editLang][$relFileRef]['ok']);
+					$count[$cKey][$LANG->getLL('caption_changed')] += count($this->labelStatus[$editLang][$relFileRef]['changed']);
+					$count[$cKey][$LANG->getLL('caption_unknown')] += count($this->labelStatus[$editLang][$relFileRef]['unknown']);
+					$count[$cKey][$LANG->getLL('caption_new')] += count($this->labelStatus[$editLang][$relFileRef]['new']);
 				}
 			}
 
-			$statInfo['Labels missing translation'] = $count['LABELS']['changed'] + $count['LABELS']['new'];
-			$statInfo['parsetime'] = t3lib_div::milliseconds()-$pt;
-			$statInfo['labels'] = $count['LABELS'];
-			$statInfo['csh'] = $count['CSH'];
+			$statInfo[$LANG->getLL('cache_labels_missing')] = $count['LABELS']['changed'] + $count['LABELS']['new'];
+			$statInfo[$LANG->getLL('cache_parsetime')] = t3lib_div::milliseconds()-$pt;
+			$statInfo[$LANG->getLL('cache_labels')] = $count['LABELS'];
+			$statInfo[$LANG->getLL('cache_csh')] = $count['CSH'];
 
 			$BE_USER->setAndSaveSessionData('tx_llxmltranslate:status', $this->labelStatus);
 		}
@@ -1522,28 +1501,28 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * Used to generate the HTML for "typo3conf/l10n/status.html" - see CLI script.
 	 */
 	function writeReportForAll()	{
+		GLOBAL $LANG;
+		
 		@ob_end_clean();
 		ob_start();
 		$startTime = time();
-		echo '<h2>Translation Status '.t3lib_BEfunc::dateTime(time()).'</h2>';
+		echo '<h2>'.$LANG->getLL('report_translation_status').' '.t3lib_BEfunc::dateTime(time()).'</h2>';
 
 		$details = $header = '';
 
-
 		$header.= '<tr>
-		<td><b>Language:</b></td>
-		<td><b>Langkey:</b></td>
-		<td><b>Labels missing translation:</b></td>
-		<td><b>Complete %:</b></td>
-		<td><b>Missing CSH:</b></td>
-		<td><b>Download:</b></td>
+		<td><b>'.$LANG->getLL('report_language').'</b></td>
+		<td><b>'.$LANG->getLL('report_langkey').'</b></td>
+		<td><b>'.$LANG->getLL('report_label_mising').'</b></td
+		<td><b>'.$LANG->getLL('report_complete').'</b></td>
+		<td><b>'.$LANG->getLL('report_missing').'</b></td>
+		<td><b>'.$LANG->getLL('report_download').'</b></td>
 		</tr>';
 			// Find all files:
 		$files = array();
 		foreach($this->extPathList as $path)	{
 			$files = array_merge($files, $this->getllxmlFiles(PATH_site . $path));
 		}
-//			$files = $this->getllxmlFiles();
 
 		t3lib_div::loadTCA('be_users');
 		foreach($GLOBALS['TCA']['be_users']['columns']['lang']['config']['items'] as $pair)	{
@@ -1572,13 +1551,13 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 			// Output:
 		echo '<table border="1">'.$header.'</table>';
-		echo '<h3>Files:</h3>';
+		echo '<h3>'.$LANG->getLL('report_files').'</h3>';
 		t3lib_div::debug($files);
 		echo $details;
 
-		echo '<hr>Processing took '.floor((time()-$startTime)/60).':'.((time()-$startTime)%60).' minutes:seconds';
+		echo '<hr>'.sprintf($LANG->getLL('report_files'),floor((time()-$startTime)/60),((time()-$startTime)%60));
 
-			// Output:
+		// Output:
 		$output = ob_get_contents().chr(10);
 		ob_end_clean();
 
@@ -1603,6 +1582,8 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	string		HTML table.
 	 */
 	function llxmlFileInfoBox($xmlArray,$relFileRef)	{
+	
+		GLOBAL $LANG;
 
 			// Get editing language:
 		$editLang = $this->MOD_SETTINGS['editLang'];
@@ -1611,30 +1592,30 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		$msg_autoFilename = '';
 		$externalFile = t3lib_div::llXmlAutoFileName(PATH_site.$relFileRef, $editLang);
 		if ($editLang=='default') {
-			$msg_autoFilename = 'Default language, no external file.';
+			$msg_autoFilename = $LANG->getLL('msg_default_language');
 		} elseif ($externalFile) {
 			$msg_autoFilename = $externalFile;
 
 			if (@file_exists(PATH_site . $externalFile)) {
 				// Here is translated file exists but original file still keeps entries.
 				// Happens when translating core and core language files are read-only
-				$msg_autoFilename .= '<br/><span class="typo3-green"><b>Translations in specific external file: "' . $externalFile . '"</b></span>';
+				$msg_autoFilename .= '<br/><span class="typo3-green"><b>'.sprintf($LANG->getLL('msg_translation_external_file'),$externalFile).'</b></span>';
 			}
 			elseif (isset($xmlArray['meta']['_ORIG_LANGUAGE_DATA']) && !is_array($xmlArray['meta']['_ORIG_LANGUAGE_DATA'])) {
 				// Here is locallang.xml references external file like this:
 				//        <languageKey index="dk">EXT:irfaq/lang/dk.locallang.xml</languageKey>
 				$msg_autoFilename = $xmlArray['meta']['_ORIG_LANGUAGE_DATA'];
-				$msg_autoFilename .= '<br /><span class="typo3-green"><b>Translations in specific external file: "'.$xmlArray['meta']['_ORIG_LANGUAGE_DATA'].'"</b></span>';
+				$msg_autoFilename .= '<br /><span class="typo3-green"><b>'.sprintf($LANG->getLL('msg_translation_external_file'),$xmlArray['meta']['_ORIG_LANGUAGE_DATA']).'</b></span>';
 			}
 			elseif (is_array($xmlArray['meta']['_ORIG_LANGUAGE_DATA']))	{
 				// Here if translations are inside main file
-				$msg_autoFilename.='<br/><span class="typo3-red"><b>Translations is in main file ('.count($xmlArray['meta']['_ORIG_LANGUAGE_DATA']).' already)! [<input type="checkbox" name="_moveToExternalFile" value="1" checked="chjecked" /> Move to external file!]</b></span>';
+				$msg_autoFilename.='<br/><span class="typo3-red"><b>'.sprintf($LANG->getLL('msg_translation_main_file'),count($xmlArray['meta']['_ORIG_LANGUAGE_DATA']),'<input type="checkbox" name="_moveToExternalFile" value="1" checked="checked" /> ').'</b></span>';
 			} else {
 				// Here if no translation in main file, no references and no external file
-				$msg_autoFilename.='<br/><span class="typo3-red"><b>File does not exist yet, but will be created!</b></span>';
+				$msg_autoFilename.='<br/><span class="typo3-red"><b>'.$LANG->getLL('msg_does_not_exist').'</b></span>';
 			}
 		} else {
-			$msg_autoFilename = '<span class="typo3-red"><b>Files might not be in an extension! Alert!</b></span>';
+			$msg_autoFilename = '<span class="typo3-red"><b>'.$LANG->getLL('msg_file_not_in_extension').'</b></span>';
 		}
 
 			// Type:
@@ -1653,20 +1634,20 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			<!-- Info about file: -->
 			<table border="0" cellpadding="1" cellspacing="1" style="border: 1px solid black;">
 				<tr class="bgColor4">
-					<td><b>Description:</b></td>
+					<td><b>'.$LANG->getLL('description').'</b></td>
 					<td>'.htmlspecialchars($xmlArray['meta']['description']).'</td>
 				</tr>
 				<tr class="bgColor4">
-					<td><b>Type:</b></td>
+					<td><b>'.$LANG->getLL('type').'</b></td>
 					<td>'.$theType.'</td>
 				</tr>
 				'.($xmlArray['meta']['type']=='CSH' ? '
 				<tr class="bgColor4">
-					<td><b>CSH table:</b></td>
+					<td><b>'.$LANG->getLL('csh_table').'</b></td>
 					<td><a href="#" onclick="'.htmlspecialchars($this->openCSH($xmlArray['meta']['csh_table'])).'">'.htmlspecialchars($xmlArray['meta']['csh_table']).'</a></td>
 				</tr>' : '').'
 				<tr class="bgColor4">
-					<td><b>External filename:</b></td>
+					<td><b>'.$LANG->getLL('external_filename').'</b></td>
 					<td>'.$msg_autoFilename.'</td>
 				</tr>
 			</table>
