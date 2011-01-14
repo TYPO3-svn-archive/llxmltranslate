@@ -242,16 +242,17 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 						t3lib_div::view_array($statInfo),0,1);
 			break;
 			case 10:	// Export
-				$this->content.=$this->doc->section('Export:',$csh.$this->renderExport(),0,1);
+				$this->content.=$this->doc->section($LANG->getLL('function_export'),$csh.$this->renderExport(),0,1);
 			break;
 			case 11:	// Export
 					// Saving submitted data:
 				$result = $this->saveSubmittedData();
-				if ($result)	{
-					$this->content.='<h3>SAVING MESSAGES:</h3>'.t3lib_div::view_array($result);
+				$this->content.=$this->doc->section($LANG->getLL('function_merge'),$csh.$this->renderMerge(),0,1);
+				
+				if ($result[$LANG->getLL('table_savelog')] || $result[$LANG->getLL('table_errors')] ) {
+					$this->content.='<p class="collapse warning">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_13_savelog', $this->doc->backPath,'').'<a class="switch" title="'.$LANG->getLL('show_saving_messages').'" onclick="switchMenu(\'results\');">'.$LANG->getLL('saving_messages').'</h3><div id="results" style="display:none">'.t3lib_div::view_array($result).'</div>';
 				}
-				$this->content.=$this->doc->section('Merge:',$csh.$this->renderMerge(),0,1);
-			break;
+				break;
 		}
 
 			// General notice:
@@ -294,8 +295,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		$checkOutput = array();
 		foreach($this->langKeys as $langKey)	{
 			if ($langKey != 'default')	{
-				$checkOutput[] = t3lib_BEfunc::getFuncCheck('','SET[addLang_'.$langKey.']',$this->MOD_SETTINGS['addLang_'.$langKey]).
-					' - '.$langKey.(' ['.$LANG->sL('LLL:EXT:setup/mod/locallang.php:lang_'.$langKey).']').'<br/>';
+				$checkOutput[] = '<div class="langbox">'.t3lib_BEfunc::getFuncCheck('','SET[addLang_'.$langKey.']',$this->MOD_SETTINGS['addLang_'.$langKey]).' '.$langKey.(' ['.$LANG->sL('LLL:EXT:setup/mod/locallang.xml:lang_'.$langKey).']').'</div>';
 			}
 		}
 		$out.= $LANG->getLL('additional_languages').'<br />'.
@@ -339,7 +339,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				'.
 				$formcontent.'
 
-				<input type="submit" name="_save" value="Save" />
+				<div class="save_button" style="margin-bottom:0.5em;"><input type="submit" name="_save" value="'.$LANG->getLL('save_button').'" /></div>
 				';
 		}
 
@@ -354,13 +354,18 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	function renderExport()	{
 		global $LANG;
 
+		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
+		$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
+				
+		$content.=  $LANG->getLL('select_extension'). $selExt . '<br />';
+			
 			// Adding language selector:
 		$content.=$LANG->getLL('select_export_file');
 
 		if (!t3lib_div::_POST('_export'))	{
 				// Create file selector box:
 			$opt = array();
-			$opt[] = '<option></option>';
+			$opt[] = '<option value="" disabled>'.$LANG->getLL('selectbox_interface').'</option>';
 
 				// All non-CSH:
 			foreach($this->files as $fN)	{
@@ -372,7 +377,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			if ($this->checkCSH(''))	{
 					// All CSH:
 				$opt[] = '<option value=""></option>';
-				$opt[] = '<option value="">CSH:</option>';
+				$opt[] = '<option value="" disabled>'.$LANG->getLL('selectbox_csh').'</option>';
 				foreach($this->files as $fN)	{
 					if (t3lib_div::isFirstPartOfStr(basename($fN),'locallang_csh'))	{
 						$opt[] = '<option value="'.htmlspecialchars($fN).'">'.htmlspecialchars($fN).'</option>';
@@ -448,7 +453,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				$opt[] = '<option value="'.htmlspecialchars($fileRef).'">'.htmlspecialchars($label).'</option>';
 			}
 			
-				// Put form together:		
+			$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
+			$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
+			// Put form together:		
 			$content.=  '
 					'.$LANG->getLL('select_extension'). $selExt . '<br />
 					'.$LANG->getLL('select_specific_file').'<select name="specFile">'.implode('',$opt).'</select><br/>
@@ -515,9 +522,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 							// Header for CSH item.
 						$itemRow.= '
 							<tr>
-								<td colspan="4" bgcolor="#ff6600"><a href="#" onclick="'.htmlspecialchars($this->openCSH($xmlArray['meta']['csh_table'].'.'.$mKey)).'"><b>'.
+								<td colspan="4" class="csh_link">&nbsp;<a href="#" title="'.$LANG->getLL('see_csh_in_context').'" onclick="'.htmlspecialchars($this->openCSH($xmlArray['meta']['csh_table'].'.'.$mKey)).'">'.
 									$mKey.
-									'</b></a>&nbsp;</td>
+									'</a></td>
 							</tr>';
 
 							// All standard field names:
