@@ -1,0 +1,5 @@
+
+  # cat=basic//10; type=boolean; label= Hide extensions without xml files : Hide extensions without xml files in selectbox. Warning ! If you activate this option, display may become slow 
+HideExtensionWithoutFiles = 0
+
+
