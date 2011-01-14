@@ -298,11 +298,11 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					' - '.$langKey.(' ['.$LANG->sL('LLL:EXT:setup/mod/locallang.php:lang_'.$langKey).']').'<br/>';
 			}
 		}
-		$out.= '<h3>Additional languages to show during editing:</h3>'.
+		$out.= $LANG->getLL('additional_languages').'<br />'.
 				implode('',$checkOutput);
 
 			// Select font size:
-		$out.= '<h3>Select font size:</h3>'.
+		$out.= '<h3 style="clear:both">'.$LANG->getLL('select_font').'</h3>'.
 				t3lib_BEfunc::getFuncMenu('','SET[fontsize]',$this->MOD_SETTINGS['fontsize'],$this->MOD_MENU['fontsize']);
 
 			// Return output:
@@ -332,10 +332,10 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			$formcontent.= $this->createEditForm($file);
 
 				// Put form together:
-			$content.= '<br/>'.
-				t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_2_saving', $this->doc->backPath,'|<br/>').'
-				<input type="submit" name="_save" value="Save" /><br/>
-				Update all values (even if not changed): <input type="checkbox" name="updateAllValues" value="1" /><hr/>
+			$content.= '<br/>
+				<div class="save_button">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_2_saving', $this->doc->backPath,'').'
+				<input type="submit" name="_save" value="'.$LANG->getLL('save_button').'" /></div>
+				'.$LANG->getLL('update_all_value').'<input type="checkbox" name="updateAllValues" value="1" />
 				'.
 				$formcontent.'
 
@@ -583,8 +583,8 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			<!-- STATUS: -->
 			<table border="0" cellpadding="1" cellspacing="1" style="border: 1px solid black;">
 				<tr bgcolor="#009900">
-					<td><b>OK</b></td>
-					<td>'.htmlspecialchars(count($this->labelStatus[$editLang][$relFileRef]['ok'])).'</td>
+					<td style="color:#fff"><b>'.$LANG->getLL('caption_ok').'</b></td>
+					<td style="color:#fff">'.htmlspecialchars(count($this->labelStatus[$editLang][$relFileRef]['ok'])).'</td>
 				</tr>
 				<tr bgcolor="#6666ff">
 					<td><b>'.$LANG->getLL('caption_new').'</b></td>
@@ -843,10 +843,10 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			$clearGif = '<br/><img src="clear.gif" width="250" height="1" alt="" />';
 
 			$tCells = array();
-			$tCells[] = '<td>Key</td>';
-			$tCells[] = '<td>Default:'.$clearGif.'</td>';
-			$tCells[] = '<td>'.$this->MOD_SETTINGS['editLang'].'</td>';
-			$tCells[] = '<td>Status:</td>';
+			$tCells[] = '<th>'.$LANG->getLL('form_key').'</th>';
+			$tCells[] = '<th style="width:50%">'.$LANG->getLL('form_default').$clearGif.'</th>';
+			$tCells[] = '<th>'.$this->MOD_SETTINGS['editLang'].'</th>';
+			$tCells[] = '<th>'.$LANG->getLL('form_status').'</th>';
 
 			foreach($this->langKeys as $langK)	{
 				if ($this->MOD_SETTINGS['addLang_'.$langK])	{
@@ -943,9 +943,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 												if (strcmp($mergeContent['orig_hash'][$fileRef][$labelKey], t3lib_div::md5int($xmlArray['data']['default'][$labelKey])))	{
 													if (!$mergeContent['orig_hash'][$fileRef][$labelKey])	{
-														$checkBox = '<span style="background-color: #666666;"><input name="check_'.$elName.'" type="checkbox" value="1" /> <br/>Uncertainty about which original label this translation is based on...(?)</span>';
+														$checkBox = '<span style="background-color: #666666;"><input name="check_'.$elName.'" type="checkbox" value="1" /> <br/>'.$LANG->getLL('message_uncertainty_about_original_label').'</span>';
 													} else {
-														$checkBox = '<span style="background-color: red;"><input name="check_'.$elName.'" type="checkbox" value="1" /> <br/>New value was not translated from the save original label as on this system!</span>';
+														$checkBox = '<span style="background-color: red;"><input name="check_'.$elName.'" type="checkbox" value="1" /> <br/>'.$LANG->getLL('message_newvalue_not_translated').'</span>';
 													}
 												} else {
 													$checkBox = '<input name="check_'.$elName.'" type="checkbox" value="1" checked="checked" />';
@@ -980,30 +980,29 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 										$formcontent.= $LANG->getLL('no_change_file').'<br/>';
 									}
 								} else {
-									$formcontent.='
-
-									ERROR: File "'.$fileRef.'" was not on the local system, so cannot merge any content from it!
-									'.t3lib_div::view_array($labelValues);
+									$formcontent.= '<p class="warning">'.sprintf($LANG->getLL('error_file_not_local'),$fileRef).' 
+									'.t3lib_div::view_array($labelValues).'</p>';
 								}
 							}
 						}
 
 							// Put form together:
 						$content.= '
-							<br/>
-							<input type="submit" name="_save" value="Save" />
-							<hr/>
+							<div class="save_button" style="margin-bottom:0.5em;">
+								<input type="submit" name="_save" value="'.$LANG->getLL('save_button').'" />
+							</div>
 
 							'.$formcontent.'
 
-							<hr/>
-							<input type="hidden" name="checkboxMode" value="1" />
-							<input type="submit" name="_save" value="Save" />
+							<div class="save_button" style="margin-bottom:0.5em;">
+								<input type="hidden" name="checkboxMode" value="1" />
+								<input type="submit" name="_save" value="'.$LANG->getLL('save_button').'" />
+							</div>
 							';
-					} else $content.='<hr/>No files, strange...';
-				} else $content.= '<hr />The language in the file was "'.$mergeContent['meta']['language'].'" and your edit setting is "'.$editLang.'". Please change your edit setting so they match (if you can). Otherwise you cannot merge the file!';
-			} else $content.= '<hr />ERROR: Strange, the file did not contain an array!?';
-		} else $content.= '<hr />ERROR: Invalid file content; Hash check didn\'t match up';
+					} else $content.= '<p class="warning">'.$LANG->getLL('no_file_strange').'</p>';
+				} else $content.= '<p class="warning">'.sprintf($LANG->getLL('error_file_not_local'),$mergeContent['meta']['language'],$editLang).'</p>';
+			} else $content.=  '<p class="warning">'.$LANG->getLL('error_strange_no_array').'</p>';
+		} else $content.= '<p class="warning">'.$LANG->getLL('error_invalid_file_content').'</p>';
 
 		return $content;
 	}
