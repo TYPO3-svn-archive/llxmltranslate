@@ -185,7 +185,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			
 			div.langbox {display:block;width:200px;float:left;}
 			
-			div.save_button {float:right;}
+			div.save_button {float:right;margin-bottom:5px;}
 			table#translate-table {margin-bottom:5px;}
 		';
 
@@ -288,7 +288,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				if ($result[$LANG->getLL('table_savelog')] || $result[$LANG->getLL('table_errors')] ) {
 					$this->content.='<p class="collapse warning">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_13_savelog', $this->doc->backPath,'').'<a class="switch" title="'.$LANG->getLL('show_saving_messages').'" onclick="switchMenu(\'results\');">'.$LANG->getLL('saving_messages').'</h3><div id="results" style="display:none">'.t3lib_div::view_array($result).'</div>';
 				}
-				break;
+			break;
 		}
 		
 		// General notice:
@@ -296,17 +296,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		<a class="switch" title="'.$LANG->getLL('show_box_statistics').'" onclick="switchMenu(\'nightly\');">'.$LANG->getLL('nightly_status').'</a></p>';
 		$this->content.= '<div id="nightly"><a href="'.$this->doc->backPath.'../typo3conf/l10n/status.html" target="_blank">typo3conf/l10n/status.html</a></div>';
 	}
-
-
-
-
-
-
-
-
-
-
-
 
 	/*************************
 	 *
@@ -345,9 +334,22 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 *
 	 * @return	string		HTML
 	 */
-	function renderTranslate()	{
+	function renderTranslate($result)	{
 		global $LANG;
 
+			// Add statistics:
+		$editLang = $this->MOD_SETTINGS['editLang'];
+		foreach($this->MOD_MENU['llxml_files'] as $key => $value)	{
+			if (is_array($this->labelStatus[$editLang][$value]))	{
+				$this->MOD_MENU['llxml_files'][$key] = $value.' ['.(count($this->labelStatus[$editLang][$value]['changed'])+count($this->labelStatus[$editLang][$value]['new'])).']';
+				
+			}
+			// Remove CSH options if not available:
+			if (!$this->checkCSH($value))	{
+				unset($this->MOD_MENU['llxml_files'][$key]);
+			}
+		}
+				
 			// Selecting file:
 		$style = 'white-space: pre;';
 		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
@@ -357,10 +359,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		
 		if ($this->files[$this->MOD_SETTINGS['llxml_files']])	{
 			$formcontent = '';
+			
+			if ($result[$LANG->getLL('table_savelog')] || $result[$LANG->getLL('table_errors')] ) {
+				$formcontent.='<p class="collapse warning">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_13_savelog', $this->doc->backPath,'').'<a class="switch" title="'.$LANG->getLL('show_saving_messages').'" onclick="switchMenu(\'results\');">'.$LANG->getLL('saving_messages').'</h3><div id="results" style="display:none">'.t3lib_div::view_array($result).'</div>';
+			}
 
 				// Defining file and getting content:
 			$file = $this->files[$this->MOD_SETTINGS['llxml_files']];
-			$formcontent.= $this->createEditForm($file);
+			$formcontent.= $this->createEditForm($file,true);
 
 				// Put form together:
 			$content.= '<br/>
@@ -853,7 +859,13 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 		if (count(explode(chr(10),$elValue))>=2 || count(explode(chr(10),$elValueDefault))>=2 || $alwaysTextarea)	{
 				$wrapOff = substr($labelKey,-8)=='.seeAlso' ? 'off' : '';
-				$formElement = '<textarea name="'.htmlspecialchars($elName).'" rows="'.(count(explode(chr(10),$elValueDefault))+1).'" wrap="'.$wrapOff.'" '.$GLOBALS['TBE_TEMPLATE']->formWidthText(50,'',$wrapOff).'>'.t3lib_div::formatForTextarea($elValue).'</textarea>';
+				if (empty($elValue)) $line=round(strlen($elValueDefault)/70); else $line=round(strlen($elValue)/70);
+				$formElement = '<textarea name="'.htmlspecialchars($elName).'" rows="'.$line.'" wrap="'.$wrapOff.'" '.$GLOBALS['TBE_TEMPLATE']->formWidthText(50,'',$wrapOff).'>'.t3lib_div::formatForTextarea($elValue).'</textarea>';
+				
+			}
+			else if (strlen($elValue)>100 ||strlen($elValueDefault)>100) {
+				$line=round(strlen($elValue)/70);
+				$formElement = '<textarea name="'.htmlspecialchars($elName).'" rows="'.$line.'" '.$GLOBALS['TBE_TEMPLATE']->formWidthText(50,'','').'>'.t3lib_div::formatForTextarea($elValue).'</textarea>';
 			} else {
 				$formElement = '<input name="'.htmlspecialchars($elName).'" '.$GLOBALS['TBE_TEMPLATE']->formWidth(50).' value="'.htmlspecialchars($elValue).'" />';
 			}
@@ -943,12 +955,11 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					if (is_array($mergeContent['files']))	{
 						foreach($mergeContent['files'] as $fileRef => $labelValues)	{
 							$errors = array();
-
+							$totalFile++;
 							if (!$specFile || !strcmp($specFile,$fileRef))	{
 								$formcontent.='<h4 id="merge">'.$LANG->getLL('merge_file').' '.htmlspecialchars($fileRef).'</h4>';
 
 								if (in_array($fileRef, $this->files))	{
-
 									$xmlArray = $this->getXMLdata($fileRef);
 									$clearGif = '<br/><img src="clear.gif" width="250" height="1" alt="" />';
 
@@ -975,8 +986,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 													// Creating field name:
 												if (count(explode(chr(10),$labelValue))>=2)	{
+													$line=round(strlen($labelValue)/70);
 													$wrapOff = substr($labelKey,-8)=='.seeAlso' ? 'off' : '';
-													$formElement = '<textarea name="'.htmlspecialchars($elName).'" rows="'.(count(explode(chr(10),$labelValue))+1).'" wrap="'.$wrapOff.'" '.$GLOBALS['TBE_TEMPLATE']->formWidthText(50,'',$wrapOff).'>'.t3lib_div::formatForTextarea($labelValue).'</textarea>';
+													$formElement = '<textarea name="'.htmlspecialchars($elName).'" rows="'.$line.'" wrap="'.$wrapOff.'" '.$GLOBALS['TBE_TEMPLATE']->formWidthText(50,'',$wrapOff).'>'.t3lib_div::formatForTextarea($labelValue).'</textarea>';
+												} elseif (strlen($labelValue)>100) {
+													$line=round(strlen($labelValue)/70);
+													$formElement = '<textarea name="'.htmlspecialchars($elName).'" rows="'.$line.'" '.$GLOBALS['TBE_TEMPLATE']->formWidthText(50,'','').'>'.t3lib_div::formatForTextarea($labelValue).'</textarea>';
 												} else {
 													$formElement = '<input name="'.htmlspecialchars($elName).'" '.$GLOBALS['TBE_TEMPLATE']->formWidth(50).' value="'.htmlspecialchars($labelValue).'" />';
 												}
@@ -1003,12 +1018,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 													// Compile row:
 												$rows[] = '
 													<tr class="bgColor4">
-														<td>['.htmlspecialchars($labelKey).']</td>
+														<td style="text-align:center;">'.$checkBox.'</td>
 														<td>'.nl2br(htmlspecialchars($elValueDefault)).'</td>
 														<td>'.nl2br(htmlspecialchars($elValue)).'</td>
-														<td>'.$checkBox.'</td>
 														<td>'.$formElement.'</td>
-														<td><div style="width:200px; background-color:white; border: 1px solid black;">'.$diffHTML.'</div></td>
+													</tr>
+													<tr class="bgColor4">
+													<td colspan="2">&nbsp;</td>
+													<td colspan="2" style="background-color:#fff;">'.$diffHTML.'</td>
 													</tr>
 												';
 											}
