@@ -6,7 +6,6 @@ require(dirname(__FILE__).'/'.$BACK_PATH.'template.php');
 require_once(PATH_t3lib.'class.t3lib_scbase.php');
 require_once(PATH_t3lib.'class.t3lib_diff.php');
 
-
 /**
  * Module 'll-XML' for the 'llxmltranslate' extension.
  *
@@ -52,15 +51,15 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 */
 	function menuConfig()	{
 		global $LANG;
-
+		
 			// Configure menu:
 		$this->MOD_MENU = Array (
 			'function' => Array (
-				'1' => 'Settings',
-				'2' => 'Translate files',
-				'4' => 'Re-generate cached information',
-				'10' => 'Export',
-				'11' => 'Merge',
+				'1' => $LANG->getLL('function_settings'),
+				'2' => $LANG->getLL('function_translateFile'),
+				'4' => $LANG->getLL('function_generateCached'),
+				'10' => $LANG->getLL('function_export'),
+				'11' => $LANG->getLL('function_merge'),
 			),
 			'editLang' => array(
 #				'' => ''

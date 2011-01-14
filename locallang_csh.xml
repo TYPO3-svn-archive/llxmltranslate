@@ -120,6 +120,10 @@ EXT:llxmltranslate/cshimages/shot16.png</label>
 			<label index="funcmenu_11.image_descr">Merging an exported file.
 Here you see that a label (&quot;shortcut_save&quot;) changed in the file &quot;sysext/lang/locallang_misc.xml&quot;. You now have a chance to preview the current local value compared to the suggested value from the import file. By default the new value is accepted (the checkbox is set).
 In the last column you will see a &quot;diff-view&quot; of the content. This enables you to easily spot the changes that was made.</label>
+			<label index="funcmenu_12_nightly.alttitle">Nightly Status</label>
+			<label index="funcmenu_12_nightly.description">URL where you can verify the state of the translation. You must have launch a cronjob before if you need to collect the necessary informations (progress, missing string, compressed version)</label>
+			<label index="funcmenu_13_savelog.alttitle">Saving Messages</label>
+			<label index="funcmenu_13_savelog.description">Display the result of the log after saving the various translation</label>
 		</languageKey>
 	</data>
 	<orig_hash type="array">

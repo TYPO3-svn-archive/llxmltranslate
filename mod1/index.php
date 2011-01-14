@@ -80,6 +80,8 @@ $TYPO3_CONF_VARS['BE']['forceCharset'] = 'utf-8';
 require(t3lib_extMgm::extPath('llxmltranslate').'mod1/class.sc.php');
 $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
 
+// Include language file
+$LANG->includeLLFile('EXT:llxmltranslate/mod1/locallang.xml');
 
 // Make instance:
 $SOBE = t3lib_div::makeInstance('tx_llxmltranslate_module1');
