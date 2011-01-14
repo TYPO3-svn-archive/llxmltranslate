@@ -1681,6 +1681,8 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	array	Extension list. Key is path to extension, value is extension key (=directory name)
 	 */
 	function getExtList() {
+		$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['llxmltranslate']);
+		
 		$extList = array('' => '');
 		foreach($this->extPathList as $path) {
 			$dir = PATH_site . $path;
@@ -1694,6 +1696,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 							if ($version) {
 								$str = str_pad($dirname, 32, ' ');
 								$extList[$path] = $str . '(' . $version . ')';
+								
+								if ($confArr['HideExtensionWithoutFiles']) {
+									// Hide extension without files
+									$files = $this->getllxmlFiles($path);
+									if (empty($files))	{
+										unset($extList[$path]);
+									}
+								}
 							}
 						}
 					}
