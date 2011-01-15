@@ -10,6 +10,7 @@
 			<label index="mlang_labels_tabdescr">This module allows you to translate xml file for modules</label>
 			<label index="mlang_labels_tablabel">Tool used to translate locallang*.xml files inside the TYPO3 backend.</label>
 			<label index="conf_hide_extensions">Hide extensions without xml files : Hide extensions without xml files in selectbox. Warning ! If you activate this option, display may become slow.</label>
+			<label index="conf_order_by_title">Order extension by title : Show Title in first in extension list, else show extKey.</label>
 		</languageKey>
 	</data>
 	<orig_hash type="array">

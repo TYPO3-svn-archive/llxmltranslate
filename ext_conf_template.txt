@@ -1,6 +1,8 @@
 
   # cat=basic//10; type=boolean; label= LLL:EXT:llxmltranslate/mod1/locallang_mod.xml:conf_hide_extensions
-
 HideExtensionWithoutFiles = 0
+
+  # cat=basic//10; type=boolean; label= LLL:EXT:llxmltranslate/mod1/locallang_mod.xml:conf_order_by_title
+OrderByTitleExtension = 1
 
 

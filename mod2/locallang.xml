@@ -132,6 +132,9 @@
 			<label index="msg_file_not_in_extension">Files might not be in an extension! Alert!</label>
 			<label index="type">Type:</label>
 			<label index="csh_table">CSH table:</label>
+			<label index="title_extension">Title extension</label>
+			<label index="key_extension">Key extension</label>
+			<label index="version_extension">Version</label>
 			<label index="external_filename">External filename:</label>
 		</languageKey>
 	</data>

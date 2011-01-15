@@ -187,6 +187,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			
 			div.save_button {float:right;margin-bottom:5px;}
 			table#translate-table {margin-bottom:5px;}
+			select {font-family:monospace;font-size:'.$this->MOD_SETTINGS['fontsize'].'}
 		';
 
 		// FORCING charset to utf-8 (since all locallang-XML files are in UTF-8!)
@@ -1719,6 +1720,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * @return	array	Extension list. Key is path to extension, value is extension key (=directory name)
 	 */
 	function getExtList() {
+		GLOBAL $LANG;
 		$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['llxmltranslate']);
 		
 		$extList = array('' => '');
@@ -1731,10 +1733,18 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 						if ($dirname{0} != '.') {
 							$path = $dir . $dirname;
 							$version = $this->getExtVersion($dirname, $path);
-							if ($version) {
-								$str = str_pad($dirname, 32, ' ');
-								$extList[$path] = $str . '(' . $version . ')';
-								
+							if ($version) {					
+								$extTitle = $this->getExtTitle($dirname, $path);
+								$extTitle = str_replace(' ','&nbsp;',str_pad($extTitle, 45, ' '));
+								$dirname = str_replace(' ','&nbsp;',str_pad($dirname, 30, ' '));
+								if ($confArr['OrderByTitleExtension']) {	
+									$TitleInFirst = 1;
+									$extList[$path] = $extTitle.$dirname.$version;
+								}
+								else {		
+									$TitleInFirst = 0;
+									$extList[$path] = $dirname.$extTitle.$version;
+								}								
 								if ($confArr['HideExtensionWithoutFiles']) {
 									// Hide extension without files
 									$files = $this->getllxmlFiles($path);
@@ -1749,6 +1759,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			}
 		}
 		asort($extList);
+		if ($TitleInFirst) {
+			$Select_header = str_replace(' ','&nbsp;',str_pad($LANG->getLL('title_extension'),45," ")).str_replace(' ','&nbsp;',str_pad($LANG->getLL('key_extension'),30," ")).$LANG->getLL('version_extension');
+		} else {
+			$Select_header = str_replace(' ','&nbsp;',str_pad($LANG->getLL('key_extension'),30," ")).str_replace(' ','&nbsp;',str_pad($LANG->getLL('title_extension'),45," ")).$LANG->getLL('version_extension');
+		}
+		$extList = array_merge(array('__' => $Select_header, '___' => str_replace(' ','&nbsp;',str_pad('',82,'='))),$extList);
 		return $extList;
 	}
 
@@ -1764,10 +1780,30 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		@include($extPath . '/ext_emconf.php');
 		return isset($EM_CONF[$_EXTKEY]['version']) ? $EM_CONF[$_EXTKEY]['version'] : '';
 	}
+
+	/**
+	 * Obtains extension title
+	 *
+	 * @param	string	$extKey	Extension key
+	 * @param	string	$extPath	Extension path
+	 * @return	string	Extension title
+	 */
+	function getExtTitle($extKey, $extPath) {
+		$_EXTKEY = $extKey;
+		@include($extPath . '/ext_emconf.php');
+		return ucfirst($EM_CONF[$_EXTKEY]['title']);
+	}
+	
+	
+	function includeLocalLang()	{
+		$llFile = t3lib_extMgm::extPath('llxmltranslate').'mod1/locallang.xml';
+		$this->LL = t3lib_div::readLLXMLfile($llFile, $GLOBALS['LANG']->lang);
+	}
 }
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/llxmltranslate/mod1/index.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/llxmltranslate/mod1/index.php']);
 }
+
 ?>
