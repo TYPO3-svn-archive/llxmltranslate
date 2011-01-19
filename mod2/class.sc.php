@@ -170,7 +170,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			table#translate-table td.csh_link a {color:#fff;font-weight:bold;}
 			table#table-merge td {padding:2px;}
 			
-			table#table-merge input:focus, table#translate-table input:focus, table#table-merge textarea:focus, table#translate-table textarea:focus {background-color:#FFFFDF;}
+			table#table-merge input:focus, table#translate-table input:focus, table#table-merge textarea:focus, table#translate-table textarea:focus {background-color:#FFFFDF;border:1px solid #009900;padding:3px;}
 			
 			h3.uppercase {background-color:#BC3939;color:#fff;padding:2px 0 2px 5px}
 			h4#merge {background-color:#59718F;color:#fff;padding:2px;clear:both;}
@@ -265,7 +265,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			case 4:
 
 					// Re-generating file list:
-				$files = $this->getllxmlFiles_cached(TRUE);
+				$files = $this->getllxmlFiles_cached(TRUE,TRUE);
 
 					// Re-generate status
 				$statInfo = $this->loadTranslationStatus($files);
@@ -938,7 +938,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		$uploadedTempFile = t3lib_div::upload_to_tempfile($GLOBALS['HTTP_POST_FILES']['upload_merge_file']['tmp_name']);
 		list($hash,$fileContent) = explode(':',t3lib_div::getUrl($uploadedTempFile),2);
 		$fileContent = preg_replace('[[:space:]]','',$fileContent);
-#debug(array($fileContent));
 
 		t3lib_div::unlink_tempfile($uploadedTempFile);
 		$specFile = $this->files[t3lib_div::_POST('specFile')];
@@ -1457,23 +1456,25 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 */
 	function getllxmlFiles($extPath)	{
 
-			// Initialize:
+		// Initialize:
 		$files = array();
 
+		if (!$extPath) {
 			// Traverse extension locations:
-	/*
-		foreach($this->extPathList as $path)	{
-			if (is_dir(PATH_site . $path))	{
-				$files = t3lib_div::getAllFilesAndFoldersInPath($files, PATH_site . $path, 'xml');
+			foreach($this->extPathList as $path)	{
+				if (is_dir(PATH_site . $path))	{
+					$files = t3lib_div::getAllFilesAndFoldersInPath($files, PATH_site . $path, 'xml');
+				}
 			}
 		}
-	*/
-		$files = t3lib_div::getAllFilesAndFoldersInPath($files, $extPath . '/', 'xml');
+		else {
+			$files = t3lib_div::getAllFilesAndFoldersInPath($files, $extPath . '/', 'xml');
+		}
 
-			// Remove prefixes
+		// Remove prefixes
 		$files = t3lib_div::removePrefixPathFromList($files, PATH_site);
 
-			// Remove all non-locallang files (looking at the prefix)
+		// Remove all non-locallang files (looking at the prefix)
 		foreach($files as $key => $value)	{
 			if (substr(basename($value), 0, 9) != 'locallang')	{
 				unset($files[$key]);
@@ -1487,13 +1488,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 * Get all locallang-XML files (generates it unless found in ses. data)
 	 *
 	 * @param	boolean		If set, then the file list is regenerated.
+	 * @param	boolean		If set, then get ALL locallang-XML files and not specific files
 	 * @return	array		Array of files.
 	 */
-	function getllxmlFiles_cached($regenerate = false)	{
+	function getllxmlFiles_cached($regenerate = false,$all = false)	{
 		$set = t3lib_div::_GP('SET');
 		$extPath = $set['llxml_extlist'] ? $set['llxml_extlist'] : $this->MOD_SETTINGS['llxml_extlist'];
 		$ext = $this->MOD_MENU['llxml_extlist'][$extPath];
-		if ($ext == '') {
+		if ($ext == '' && $all == FALSE) {
 			$files = array();
 		}
 		else {
