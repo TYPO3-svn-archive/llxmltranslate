@@ -294,7 +294,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		
 		// General notice:
 		$this->content.= '<p class="collapse""><span class="switch" title="'.$LANG->getLL('show_box_nightly').'" onclick="switchMenu(\'nightly\');">'.$this->showCSH('funcmenu_12_nightly',$LANG->getLL('nightly_status')).'</span></p>';
-		$this->content.= '<div id="nightly"><a href="'.$this->doc->backPath.'../typo3conf/l10n/status.html" target="_blank">typo3conf/l10n/status.html</a> | <a href="http://translation.typo3.org/typo3conf/l10n/status.html" target="_blank">http://translation.typo3.org/typo3conf/l10n/status.html</a></div>';
+		$this->content.= '<div id="nightly" style="display:none"><a href="'.$this->doc->backPath.'../typo3conf/l10n/status.html" target="_blank">typo3conf/l10n/status.html</a> | <a href="http://translation.typo3.org/typo3conf/l10n/status.html" target="_blank">http://translation.typo3.org/typo3conf/l10n/status.html</a></div>';
 	}
 
 	/*************************
