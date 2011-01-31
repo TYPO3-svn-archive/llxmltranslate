@@ -1,11 +1,14 @@
-2011-02-1	Yannick Pavard  <ypavard@infoglobe.ca>
+2011-02-01	Yannick Pavard  <ypavard@infoglobe.ca>
+
+	* Label Changed: "Generated cached" becomes "Statistic page"
+	* New menu item: Global Statistics view
 	* Language: New help bubble for TYPO3 4.5
 	* Changed: Moved the extension after "User" modules instead of bottom and changed to a new icon
 	* New option : Hide extensions in list that don't provide xml translation files
 	* Changed: Extension configuration support multilingue version (for translator)
 	* Fixed: Replace ereg_replace function by preg_replace (compatibility with PHP 5.3, thanks Stefano Kowalke)
-	* Added feature : Hide extensions in list without xml file
-	* Added feature : Sorting extension list by title or key
+	* Added feature: Hide extensions in list without xml file
+	* Added feature: Sorting extension list by title or key
 	* Changed: (translate files) Update information in selecbox file after save submit
 	* Changed: Merge and Export page have their own Select Extension menu
 	* Changed: Added CSS for better interface 

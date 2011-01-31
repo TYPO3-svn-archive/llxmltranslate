@@ -10,7 +10,7 @@
 			<label index="header_llxml">ll-XML translation</label>
 			<label index="function_settings">Settings</label>
 			<label index="function_translateFile">Translate files</label>
-			<label index="function_generateCached">Re-generate cached information</label>
+			<label index="function_generateCached">Statistics / Information</label>
 			<label index="function_export">Export</label>
 			<label index="function_merge">Merge</label>
 			<label index="select_export_file">Select files to export:</label>
@@ -20,6 +20,7 @@
 			<label index="show_saving_messages">Show saving messages »</label>
 			<label index="done">Done.</label>
 			<label index="statistics">Statistics:</label>
+			<label index="view_global_statistic">View global statistics (May take some time)</label>
 			<label index="nightly_status">NIGHTLY STATUS »</label>
 			<label index="show_box_nightly">Show link to Nightly status</label>
 			<label index="select_language">Select language you want to edit:</label>

@@ -104,14 +104,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			// Load translation status content:
 		$this->loadTranslationStatus();
 
-			// Setting extension
-		$this->MOD_MENU['llxml_extlist'] = $this->getExtList();
-
 			// Call parent menu config function:
 		parent::menuConfig();
 
+			// Setting extension
+		$this->MOD_MENU['llxml_extlist'] = $this->getExtList();
+
 			// Setting files list:
-		$this->files = $this->getllxmlFiles_cached();
+		$this->files = $this->getllxmlFiles_cached(TRUE);
 		$this->MOD_MENU['llxml_files'] = array('_INTERFACE'=> $LANG->getLL('selectbox_interface'));
 		foreach($this->files as $key => $value)	{
 			if (substr(basename($value),0,13)!='locallang_csh') {
@@ -270,7 +270,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				
 				$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
 				$style = 'white-space: pre;';
-				$selExt = preg_replace('/<option value="_*">/', '<option disabled="disabled" value="_">', $selExt);
+				$selExt = preg_replace('/<option value="__*">/', '<option disabled="disabled" value="_">', $selExt);
 				$selExt = preg_replace('/<option /', '<option style="'.$style.'"', $selExt);
 		
 				$this->content.= $this->doc->section($LANG->getLL('function_generateCached'),
@@ -349,11 +349,11 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				unset($this->MOD_MENU['llxml_files'][$key]);
 			}
 		}
-				
+
 			// Selecting file:
 		$style = 'white-space: pre;';
 		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);		
-		$selExt = preg_replace('/<option value="_*">/', '<option disabled="disabled" value="_">', $selExt);
+		$selExt = preg_replace('/<option value="__*">/', '<option disabled="disabled" value="_">', $selExt);
 		$selExt = preg_replace('/<option /', '<option style="'.$style.'"', $selExt);
 		$content .= $this->showCSH('funcmenu_'.$this->MOD_SETTINGS['function'],$LANG->getLL('select_extension')). $selExt . '<br />';
 		$content .= $LANG->getLL('select_file').t3lib_BEfunc::getFuncMenu('','SET[llxml_files]',$this->MOD_SETTINGS['llxml_files'],$this->MOD_MENU['llxml_files']);
@@ -394,7 +394,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
 		$style = 'white-space: pre;';
-		$selExt = preg_replace('/<option value="_*">/', '<option disabled="disabled" value="_">', $selExt);
+		$selExt = preg_replace('/<option value="__*">/', '<option disabled="disabled" value="_">', $selExt);
 		$selExt = preg_replace('/<option /', '<option style="'.$style.'"', $selExt);
 				
 		$content.=  $LANG->getLL('select_extension'). $selExt . '<br />';
@@ -495,7 +495,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			
 			$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
 			$style = 'white-space: pre;';
-			$selExt = preg_replace('/<option value="_*">/', '<option disabled="disabled" value="_">', $selExt);
+			$selExt = preg_replace('/<option value="__*">/', '<option disabled="disabled" value="_">', $selExt);
 			$selExt = preg_replace('/<option /', '<option style="'.$style.'"', $selExt);
 			// Put form together:		
 			$content.=  '
@@ -1496,8 +1496,10 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 */
 	function getllxmlFiles_cached($regenerate = false,$all = false)	{
 		$set = t3lib_div::_GP('SET');
+		$this->MOD_SETTINGS['llxml_extlist'];		
 		$extPath = $set['llxml_extlist'] ? $set['llxml_extlist'] : $this->MOD_SETTINGS['llxml_extlist'];
 		$ext = $this->MOD_MENU['llxml_extlist'][$extPath];
+
 		if ($ext == '' && $all == FALSE) {
 			$files = array();
 		}
@@ -1518,7 +1520,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	/**
 	 * Load translation status information.
 	 *
-	 * @param	array		If you supply an array of locallang files they will be analysed and information cached (used for "Re-generate cached information".
+	 * @param	array		If you supply an array of locallang files they will be analysed and information cached (used for "Re-generate cached information").
 	 * @return	array		Statistical information
 	 */
 	function loadTranslationStatus($files = false, $cshOK = false) {
@@ -1726,6 +1728,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 */
 	function getExtList() {
 		GLOBAL $LANG;
+
 		$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['llxmltranslate']);
 		
 		$extList = array('' => '');
@@ -1776,7 +1779,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				unset($extList[$key]);
 			}		
 		}
-		$extList = array_merge(array('_' => $Select_header, '__' => str_replace(' ','&nbsp;',str_pad('',82,'='))),$extList);
+		// Add new option for statistic view only
+		$statistic = array();
+		if ($this->MOD_SETTINGS['function'] == 4) {
+			$statistic = array('' => $LANG->getLL('view_global_statistic'),'____' => str_replace(' ','&nbsp;',str_pad('',82,'=')));
+		}	
+		$extList = array_merge(array('__' => $Select_header, '___' => str_replace(' ','&nbsp;',str_pad('',82,'='))),$statistic,$extList);
 		return $extList;
 	}
 
