@@ -21,6 +21,7 @@
 			<label index="done">Done.</label>
 			<label index="statistics">Statistics:</label>
 			<label index="nightly_status">Nightly status</label>
+			<label index="show_box_nightly">Show link to Nightly status</label>
 			<label index="select_language">Select language you want to edit:</label>
 			<label index="additional_languages">Additional languages to show during editing:</label>
 			<label index="select_font">Select font size:</label>

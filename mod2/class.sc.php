@@ -177,7 +177,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			
 			p.collapse {background-color:#8490A0;margin:0.5em 0;padding:0.2em;clear:both;}
 			p.warning {background-color:#FF6600;color:#fff;padding:2px;font-weight:bold;}
-			p.collapse a.switch {display:block; color:#fff; font-weight:bold;cursor:pointer;}
+			p.collapse span.switch {display:block; color:#fff; font-weight:bold;cursor:pointer;}
 			p.collapse .typo3-csh-link {float:left;}
 			
 			div.typo3-noDoc {width:98%;}
@@ -214,7 +214,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		$this->content.=$this->doc->startPage($LANG->getLL('title_llxml'));
 		$this->content.=$this->doc->header($LANG->getLL('header_llxml'));
 		$this->content.=$this->doc->divider(5);
-		$this->content.=$this->doc->section('',t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', '', $this->doc->backPath,'').t3lib_BEfunc::getFuncMenu('','SET[function]',$this->MOD_SETTINGS['function'],$this->MOD_MENU['function']));
+		$this->content.=$this->doc->section('',$this->showCSH().t3lib_BEfunc::getFuncMenu('','SET[function]',$this->MOD_SETTINGS['function'],$this->MOD_MENU['function']));
 		
 		$this->content.= $GLOBALS['BE_USER']->isAdmin() ? $LANG->getLL('select_language').' '.t3lib_BEfunc::getFuncMenu('','SET[editLang]',$this->MOD_SETTINGS['editLang'],$this->MOD_MENU['editLang']):'';
 
@@ -242,13 +242,11 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	function moduleContent()	{
 
 		global $LANG;
-		// Getting CSH:
-		$csh = t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_'.$this->MOD_SETTINGS['function'], $this->doc->backPath,'');
 
-			// Function menu branching:
+		// Function menu branching:
 		switch((string)$this->MOD_SETTINGS['function'])	{
 			case 1:
-				$this->content.=$this->doc->section($LANG->getLL('function_settings'),$csh.$this->renderSettings(),0,1);
+				$this->content.=$this->doc->section($LANG->getLL('function_settings'),$this->renderSettings(),0,1);
 			break;
 			case 2:
 
@@ -260,7 +258,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 				// Re-generate status
 				$statInfo = $this->loadTranslationStatus($files);
-				$this->content.= $this->doc->section($LANG->getLL('function_translateFile'),$csh.$this->renderTranslate($result),0,1);
+				$this->content.= $this->doc->section($LANG->getLL('function_translateFile'),$this->renderTranslate($result),0,1);
 			break;
 			case 4:
 
@@ -275,26 +273,25 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		
 				$this->content.= $this->doc->section($LANG->getLL('function_generateCached'),
 						$LANG->getLL('select_extension'). $selExt . '<br />'.
-						$csh.$LANG->getLL('statistics').'<br />'.
+						$this->showCSH('funcmenu_'.$this->MOD_SETTINGS['function'],$LANG->getLL('statistics')).'<br />'.
 						t3lib_div::view_array($statInfo),0,1);
 			break;
 			case 10:	// Export
-				$this->content.=$this->doc->section($LANG->getLL('function_export'),$csh.$this->renderExport(),0,1);
+				$this->content.=$this->doc->section($LANG->getLL('function_export'),$this->renderExport(),0,1);
 			break;
 			case 11:	// Export
 					// Saving submitted data:
 				$result = $this->saveSubmittedData();
-				$this->content.=$this->doc->section($LANG->getLL('function_merge'),$csh.$this->renderMerge(),0,1);
+				$this->content.=$this->doc->section($LANG->getLL('function_merge'),$this->renderMerge(),0,1);
 				
 				if ($result[$LANG->getLL('table_savelog')] || $result[$LANG->getLL('table_errors')] ) {
-					$this->content.='<p class="collapse warning">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_13_savelog', $this->doc->backPath,'').'<a class="switch" title="'.$LANG->getLL('show_saving_messages').'" onclick="switchMenu(\'results\');">'.$LANG->getLL('saving_messages').'</h3><div id="results" style="display:none">'.t3lib_div::view_array($result).'</div>';
+					$this->content.='<p class="collapse warning"><span class="switch" title="'.$LANG->getLL('show_saving_messages').'" onclick="switchMenu(\'results\');">'.$this->showCSH('funcmenu_13_savelog',$LANG->getLL('saving_messages')).'</span><div id="results" style="display:none">'.t3lib_div::view_array($result).'</div>';
 				}
 			break;
 		}
 		
 		// General notice:
-		$this->content.= '<p class="collapse"">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_12_nightly', $this->doc->backPath,'').'
-		<a class="switch" title="'.$LANG->getLL('show_box_statistics').'" onclick="switchMenu(\'nightly\');">'.$LANG->getLL('nightly_status').'</a></p>';
+		$this->content.= '<p class="collapse""><span class="switch" title="'.$LANG->getLL('show_box_nightly').'" onclick="switchMenu(\'nightly\');">'.$this->showCSH('funcmenu_12_nightly',$LANG->getLL('nightly_status')).'</span></p>';
 		$this->content.= '<div id="nightly"><a href="'.$this->doc->backPath.'../typo3conf/l10n/status.html" target="_blank">typo3conf/l10n/status.html</a> | <a href="http://translation.typo3.org/typo3conf/l10n/status.html" target="_blank">http://translation.typo3.org/typo3conf/l10n/status.html</a></div>';
 	}
 
@@ -319,7 +316,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				$checkOutput[] = '<div class="langbox">'.t3lib_BEfunc::getFuncCheck('','SET[addLang_'.$langKey.']',$this->MOD_SETTINGS['addLang_'.$langKey]).' '.$langKey.(' ['.$LANG->sL('LLL:EXT:setup/mod/locallang.xml:lang_'.$langKey).']').'</div>';
 			}
 		}
-		$out.= $LANG->getLL('additional_languages').'<br />'.
+		$out.= $this->showCSH('funcmenu_'.$this->MOD_SETTINGS['function'],$LANG->getLL('additional_languages')).'<br />'.
 				implode('',$checkOutput);
 
 			// Select font size:
@@ -355,14 +352,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		$style = 'white-space: pre;';
 		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
 		$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
-		$content .= $LANG->getLL('select_extension'). $selExt . '<br />';
+		$content .= $this->showCSH('funcmenu_'.$this->MOD_SETTINGS['function'],$LANG->getLL('select_extension')). $selExt . '<br />';
 		$content .= $LANG->getLL('select_file').t3lib_BEfunc::getFuncMenu('','SET[llxml_files]',$this->MOD_SETTINGS['llxml_files'],$this->MOD_MENU['llxml_files']);
 		
 		if ($this->files[$this->MOD_SETTINGS['llxml_files']])	{
 			$formcontent = '';
 			
 			if ($result[$LANG->getLL('table_savelog')] || $result[$LANG->getLL('table_errors')] ) {
-				$formcontent.='<p class="collapse warning">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_13_savelog', $this->doc->backPath,'').'<a class="switch" title="'.$LANG->getLL('show_saving_messages').'" onclick="switchMenu(\'results\');">'.$LANG->getLL('saving_messages').'</h3><div id="results" style="display:none">'.t3lib_div::view_array($result).'</div>';
+				$formcontent.='<p class="collapse warning"><span class="switch" title="'.$LANG->getLL('show_saving_messages').'" onclick="switchMenu(\'results\');">'.$this->showCSH('funcmenu_13_savelog',$LANG->getLL('saving_messages')).'</span><div id="results" style="display:none">'.t3lib_div::view_array($result).'</div>';
 			}
 
 				// Defining file and getting content:
@@ -371,7 +368,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 				// Put form together:
 			$content.= '<br/>
-				<div class="save_button">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_2_saving', $this->doc->backPath,'').'
+				<div class="save_button">'.$this->showCSH('funcmenu_2_saving').'
 				<input type="submit" name="_save" value="'.$LANG->getLL('save_button').'" /></div>
 				'.$LANG->getLL('update_all_value').'<input type="checkbox" name="updateAllValues" value="1" />
 				'.
@@ -398,7 +395,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		$content.=  $LANG->getLL('select_extension'). $selExt . '<br />';
 			
 			// Adding language selector:
-		$content.=$LANG->getLL('select_export_file');
+		$content.=$this->showCSH('funcmenu_'.$this->MOD_SETTINGS['function'],$LANG->getLL('select_export_file'));
 
 		if (!t3lib_div::_POST('_export'))	{
 				// Create file selector box:
@@ -497,7 +494,7 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			$content.=  '
 					'.$LANG->getLL('select_extension'). $selExt . '<br />
 					'.$LANG->getLL('select_specific_file').'<select name="specFile">'.implode('',$opt).'</select><br/>
-					'.$LANG->getLL('upload_merge').'<input type="file" size="60" name="upload_merge_file" /><br/>
+					'.$this->showCSH('funcmenu_'.$this->MOD_SETTINGS['function'],$LANG->getLL('upload_merge')).'<input type="file" size="60" name="upload_merge_file" /><br/>
 					'.$LANG->getLL('show_only_file').'<input type="checkbox" name="showFileIndexOnly" value="1" /><br/>
 					<input type="submit" name="_uploaded" value="'.$LANG->getLL('upload_merge_file_button').'" />
 				';
@@ -622,13 +619,12 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			$output = '';
 			
 			$output.= '<p class="collapse">
-			'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_2_fileinfo', $this->doc->backPath,'').'
-			<a class="switch" title="'.$LANG->getLL('show_box_fileinfo').'" onclick="switchMenu(\'fileinfo\');">'.$LANG->getLL('box_fileinfo').'</a></p>
+			<span class="switch" title="'.$LANG->getLL('show_box_fileinfo').'" onclick="switchMenu(\'fileinfo\');">'.$this->showCSH('funcmenu_2_stat', $LANG->getLL('box_fileinfo')).'</span></p>
 			<div id="fileinfo" style="display:none">'.
 			$this->llxmlFileInfoBox($xmlArray,$relFileRef).'</div>
 			
-			<p class="collapse">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_2_stat', $this->doc->backPath,'').'
-			<a class="switch" title="'.$LANG->getLL('show_box_statistics').'" onclick="switchMenu(\'stats\');">'.$LANG->getLL('box_statistics').'</a></p>
+			<p class="collapse">
+			<span class="switch" title="'.$LANG->getLL('show_box_statistics').'" onclick="switchMenu(\'stats\');">'.$this->showCSH('funcmenu_2_stat', $LANG->getLL('box_statistics')).'</span></p>
 			<div id="stats" style="display:none">
 			
 			<!-- STATUS: -->
@@ -652,8 +648,8 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			</table>
 			</div>
 
-			<p class="collapse">'.t3lib_BEfunc::cshItem('_MOD_txllxmltranslateM1', 'funcmenu_2_translationinterface'.($xmlArray['meta']['type'] == 'CSH' ? '_csh' : ''), $this->doc->backPath,'').'
-			<a class="switch" title="'.$LANG->getLL('show_box_translationinterface').'" onclick="switchMenu(\'translationinterface\');">'.$LANG->getLL('box_translationinterface').'</a></p>
+			<p class="collapse">
+			<span class="switch" title="'.$LANG->getLL('show_box_translationinterface').'" onclick="switchMenu(\'translationinterface\');">'.$this->showCSH('funcmenu_2_translationinterface'.($xmlArray['meta']['type'] == 'CSH' ? '_csh' : ''),$LANG->getLL('box_translationinterface')).'</span></p>
 			<div id="translationinterface">
 
 			<!-- Translation table: -->
@@ -1801,11 +1797,33 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		$llFile = t3lib_extMgm::extPath('llxmltranslate').'mod1/locallang.xml';
 		$this->LL = t3lib_div::readLLXMLfile($llFile, $GLOBALS['LANG']->lang);
 	}
+
+	/**
+	 * Show old or new CSH
+	 *
+	 * @param	string	$labelName	Label name in xml file
+	 * @param	string	$labe		Text string of the language label
+	 * @return	string	Help bubbles
+	 */
+	function showCSH($labelName='', $label='') {
+		$refTCA = '_MOD_txllxmltranslateM1'; /* Reference for TCA (see extTable.php) */
+
+		// New help in TYPO3 4.5 and more
+		if (t3lib_div::int_from_ver(TYPO3_version) >= 4005000) {
+	                $csh = t3lib_BEfunc::wrapInHelp($refTCA, $labelName, $label);
+		} else {
+     			// use old help before TYPO3 4.5
+			$csh = t3lib_BEfunc::cshItem($refTCA, $labelName , $this->doc->backPath).$label;
+		}
+
+		return $csh;
+	}
+	
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/llxmltranslate/mod1/index.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/llxmltranslate/mod1/index.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/llxmltranslate/mod2/index.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/llxmltranslate/mod2/index.php']);
 }
 
 ?>
