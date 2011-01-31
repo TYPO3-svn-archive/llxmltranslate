@@ -269,7 +269,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				$statInfo = $this->loadTranslationStatus($files);
 				
 				$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
-				$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
+				$style = 'white-space: pre;';
+				$selExt = preg_replace('/<option value="_*">/', '<option disabled="disabled" value="_">', $selExt);
+				$selExt = preg_replace('/<option /', '<option style="'.$style.'"', $selExt);
 		
 				$this->content.= $this->doc->section($LANG->getLL('function_generateCached'),
 						$LANG->getLL('select_extension'). $selExt . '<br />'.
@@ -350,8 +352,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				
 			// Selecting file:
 		$style = 'white-space: pre;';
-		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
-		$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
+		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);		
+		$selExt = preg_replace('/<option value="_*">/', '<option disabled="disabled" value="_">', $selExt);
+		$selExt = preg_replace('/<option /', '<option style="'.$style.'"', $selExt);
 		$content .= $this->showCSH('funcmenu_'.$this->MOD_SETTINGS['function'],$LANG->getLL('select_extension')). $selExt . '<br />';
 		$content .= $LANG->getLL('select_file').t3lib_BEfunc::getFuncMenu('','SET[llxml_files]',$this->MOD_SETTINGS['llxml_files'],$this->MOD_MENU['llxml_files']);
 		
@@ -390,7 +393,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		global $LANG;
 
 		$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
-		$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
+		$style = 'white-space: pre;';
+		$selExt = preg_replace('/<option value="_*">/', '<option disabled="disabled" value="_">', $selExt);
+		$selExt = preg_replace('/<option /', '<option style="'.$style.'"', $selExt);
 				
 		$content.=  $LANG->getLL('select_extension'). $selExt . '<br />';
 			
@@ -489,7 +494,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			}
 			
 			$selExt = t3lib_BEfunc::getFuncMenu('', 'SET[llxml_extlist]', $this->MOD_SETTINGS['llxml_extlist'], $this->MOD_MENU['llxml_extlist']);
-			$selExt = preg_replace('/<option /', '<option style="' . $style . '" ', $selExt);
+			$style = 'white-space: pre;';
+			$selExt = preg_replace('/<option value="_*">/', '<option disabled="disabled" value="_">', $selExt);
+			$selExt = preg_replace('/<option /', '<option style="'.$style.'"', $selExt);
 			// Put form together:		
 			$content.=  '
 					'.$LANG->getLL('select_extension'). $selExt . '<br />
@@ -1762,7 +1769,14 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		} else {
 			$Select_header = str_replace(' ','&nbsp;',str_pad($LANG->getLL('key_extension'),30," ")).str_replace(' ','&nbsp;',str_pad($LANG->getLL('title_extension'),45," ")).$LANG->getLL('version_extension');
 		}
-		$extList = array_merge(array('__' => $Select_header, '___' => str_replace(' ','&nbsp;',str_pad('',82,'='))),$extList);
+		// Delete empty line (where do from this line ?)
+		foreach($extList as $key => $value) {
+			$temp = trim($key);
+			if(empty($temp)){
+				unset($extList[$key]);
+			}		
+		}
+		$extList = array_merge(array('_' => $Select_header, '__' => str_replace(' ','&nbsp;',str_pad('',82,'='))),$extList);
 		return $extList;
 	}
 

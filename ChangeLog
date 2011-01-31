@@ -1,21 +1,18 @@
-2011-01-14	Yannick Pavard  <ypavard@infoglobe.ca>
-	* Extension configuration support multilingue version (for translator)
-
-2011-01-12	Yannick Pavard  <ypavard@infoglobe.ca>
-	* Replace ereg_replace function by preg_replace (compatibility with PHP 5.3)
-        * Replace ereg function by preg_match
-
-2009-03-21	Yannick Pavard  <ypavard@infoglobe.ca>
-	* Added feature : (translate files)  Hide extensions in list without xml file
+2011-02-1	Yannick Pavard  <ypavard@infoglobe.ca>
+	* Language: New help bubble for TYPO3 4.5
+	* Changed: Moved the extension after "User" modules instead of bottom and changed to a new icon
+	* New option : Hide extensions in list that don't provide xml translation files
+	* Changed: Extension configuration support multilingue version (for translator)
+	* Fixed: Replace ereg_replace function by preg_replace (compatibility with PHP 5.3, thanks Stefano Kowalke)
+	* Added feature : Hide extensions in list without xml file
+	* Added feature : Sorting extension list by title or key
 	* Changed: (translate files) Update information in selecbox file after save submit
-	* Changed: (general) Css and color for better user friendly interface 
-	* Changed: (general) Expanded/collapsed feature for statistics, metada, log
-	* Changed: Bigger editable textarea for interface XML files.
-	* Changed: Move as sub-module in "user" module
-	* Language: Use xml files instead of Harcoded string
-	* Charset: Forced UTF-8 charset for frame only
-	* Fixed: Changed reference "setup/mod/locallang.php" to "setup/mod/locallang.xml"
-	* Changed: New icon for backend and extension
+	* Changed: Merge and Export page have their own Select Extension menu
+	* Changed: Added CSS for better interface 
+	* Changed: Log display hidden in collapsable menu
+	* Changed: Bigger textarea for translation.
+	* Language: LLXML is now fully translatable
+	* Charset: Module forces UTF-8 charset to diminish encoding problem (just when using LLXML)
 
 2008-05-09	Dmitry Dulepov	<dmitry@typo3.org>
 
