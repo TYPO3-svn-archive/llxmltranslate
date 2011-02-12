@@ -1722,6 +1722,16 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	}
 
 	/**
+	 * Pad a string to a certain length with another string
+	 * See documentation :http://ca2.php.net/manual/en/function.str-pad.php
+	 * @return	string
+	 */
+	function mb_str_pad($input, $pad_length, $pad_string=' ', $pad_type=STR_PAD_RIGHT) {
+		$diff = strlen($input) - mb_strlen($input, 'UTF-8');
+   		return str_pad($input, $pad_length+$diff, $pad_string, $pad_type);
+	}
+
+	/**
 	 * Returns a list of all extensions
 	 *
 	 * @return	array	Extension list. Key is path to extension, value is extension key (=directory name)
@@ -1743,8 +1753,8 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 							$version = $this->getExtVersion($dirname, $path);
 							if ($version) {					
 								$extTitle = $this->getExtTitle($dirname, $path);
-								$extTitle = str_replace(' ','&nbsp;',str_pad($extTitle, 45, ' '));
-								$dirname = str_replace(' ','&nbsp;',str_pad($dirname, 30, ' '));
+								$extTitle = str_replace(' ','&nbsp;',$this->mb_str_pad($extTitle, 45));
+								$dirname = str_replace(' ','&nbsp;',$this->mb_str_pad($dirname, 30));
 								if ($confArr['OrderByTitleExtension']) {	
 									$TitleInFirst = 1;
 									$extList[$path] = $extTitle.$dirname.$version;
@@ -1768,9 +1778,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		}
 		asort($extList);
 		if ($TitleInFirst) {
-			$Select_header = str_replace(' ','&nbsp;',str_pad($LANG->getLL('title_extension'),45," ")).str_replace(' ','&nbsp;',str_pad($LANG->getLL('key_extension'),30," ")).$LANG->getLL('version_extension');
+			$Select_header = str_replace(' ','&nbsp;',$this->mb_str_pad($LANG->getLL('title_extension'),45)).str_replace(' ','&nbsp;',$this->mb_str_pad($LANG->getLL('key_extension'),30)).$LANG->getLL('version_extension');
 		} else {
-			$Select_header = str_replace(' ','&nbsp;',str_pad($LANG->getLL('key_extension'),30," ")).str_replace(' ','&nbsp;',str_pad($LANG->getLL('title_extension'),45," ")).$LANG->getLL('version_extension');
+			$Select_header = str_replace(' ','&nbsp;',$this->mb_str_pad($LANG->getLL('key_extension'),30)).str_replace(' ','&nbsp;',$this->mb_str_pad($LANG->getLL('title_extension'),45)).$LANG->getLL('version_extension');
 		}
 		// Delete empty line (where do from this line ?)
 		foreach($extList as $key => $value) {
@@ -1782,9 +1792,9 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 		// Add new option for statistic view only
 		$statistic = array();
 		if ($this->MOD_SETTINGS['function'] == 4) {
-			$statistic = array('' => $LANG->getLL('view_global_statistic'),'____' => str_replace(' ','&nbsp;',str_pad('',82,'=')));
+			$statistic = array('' => $LANG->getLL('view_global_statistic'),'____' => str_replace(' ','&nbsp;',$this->mb_str_pad('',82,'=')));
 		}	
-		$extList = array_merge(array('__' => $Select_header, '___' => str_replace(' ','&nbsp;',str_pad('',82,'='))),$statistic,$extList);
+		$extList = array_merge(array('__' => $Select_header, '___' => str_replace(' ','&nbsp;',$this->mb_str_pad('',82,'='))),$statistic,$extList);
 		return $extList;
 	}
 
