@@ -2,7 +2,7 @@
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
 if (TYPO3_MODE=='BE')	{
-	
+
 	// add module after 'Web'
 	if (!isset($TBE_MODULES['txllxml']))	{
 		$temp_TBE_MODULES = array();

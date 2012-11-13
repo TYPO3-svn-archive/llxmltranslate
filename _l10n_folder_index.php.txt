@@ -20,7 +20,7 @@ if ($langKey)	{
 					$fileArr = array();
 					$fileArr = t3lib_div::getAllFilesAndFoldersInPath($fileArr,'./'.$langKey.'/'.$extKey.'/','xml');
 					$fileArr = t3lib_div::removePrefixPathFromList($fileArr,'./'.$langKey.'/'.$extKey.'/');
-					
+
 					$outputFile[$extKey] = array();
 					foreach($fileArr as $file)	{
 						$outputFile[$extKey][]	= array(
@@ -30,12 +30,12 @@ if ($langKey)	{
 						);
 					}
 				}
-					
+
 				header('Content-Type: text/xml');
 				echo '<?xml version="1.0" standalone="yes" ?>'.
 					t3lib_div::array2xml(array(
-							'mode' => 'list_files', 
-							'lang' => $langKey, 
+							'mode' => 'list_files',
+							'lang' => $langKey,
 							'files' => $outputFile
 						), '', 0, 'llxmltranslate',0,array(
 								'parentTagMap' => array(
@@ -49,8 +49,8 @@ if ($langKey)	{
 				header('Content-Type: text/xml');
 				echo '<?xml version="1.0" standalone="yes" ?>'.
 					t3lib_div::array2xml(array(
-							'mode' => 'list_extensions', 
-							'lang' => $langKey, 
+							'mode' => 'list_extensions',
+							'lang' => $langKey,
 							'extensions' => $availableTranslations,
 							'tip' => 'To get file list for extension(s), add "?langKey='.$langKey.'&extList=[ext1],[ext2],..." to URL!'
 						), '', 0, 'llxmltranslate');
@@ -62,7 +62,7 @@ if ($langKey)	{
 	header('Content-Type: text/xml');
 	echo '<?xml version="1.0" standalone="yes" ?>'.
 		t3lib_div::array2xml(array(
-				'mode' => 'list_languages', 
+				'mode' => 'list_languages',
 				'languages' => $availableLanguages,
 				'tip' => 'To list single language, add "?langKey=[language key]" to URL!'
 			), '', 0, 'llxmltranslate');
