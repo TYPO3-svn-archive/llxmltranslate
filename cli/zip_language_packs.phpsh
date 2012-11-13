@@ -10,7 +10,6 @@ define('TYPO3_cliMode', TRUE);
 
 	// Defining PATH_thisScript here: Must be the ABSOLUTE path of this script in the right context:
 	// This will work as long as the script is called by it's absolute path!
-//define('PATH_thisScript',$_ENV['_']?$_ENV['_']:$_SERVER['_']);
 define('PATH_thisScript', __FILE__);
 
 	// Include configuration file:
@@ -21,7 +20,7 @@ require(dirname(PATH_thisScript).'/'.$BACK_PATH.'init.php');
 
 @ini_set('max_execution_time',3600);
 
-# HERE you run your application!
+// HERE you run your application!
 
 $thePath = PATH_site.'typo3conf/l10n/';
 if (@is_dir($thePath))	{
@@ -33,10 +32,8 @@ if (@is_dir($thePath))	{
 		if (strlen($dir)==2 && $dir!='..')	{
 			$cmd = 'zip -r '.$dir.'.zip '.$dir.'/';
 			exec($cmd, $a, $b);
-			//echo $cmd.' '.$b.chr(10);
 
 			$cmd = 'tar czf '.$dir.'.tgz '.$dir.'/';
-			//echo $cmd.chr(10);
 			exec($cmd);
 		}
 	}

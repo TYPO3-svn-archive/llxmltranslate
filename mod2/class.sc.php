@@ -150,8 +150,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 	 */
 	function checkCSH($filename = '') {
 		return true;
-//		$editLang = $this->MOD_SETTINGS['editLang'];
-// 		return !($editLang!='default' && (!$filename || substr(basename($filename),0,13)=='locallang_csh' || substr(basename($filename),0,4)=='CSH:'));
 	}
 
 	/**
@@ -907,7 +905,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 			} else {
 				$formElement = '<input name="'.htmlspecialchars($elName).'" '.$GLOBALS['TBE_TEMPLATE']->formWidth(50).' value="'.htmlspecialchars($elValue).'" />';
 			}
-#debug(t3lib_div::debug_ordvalue($elValue),$elName);
 			$tCells[] = '<td bgcolor="'.$bgcolor.'">'.$formElement.'</td>';
 
 				// Status label:
@@ -1205,7 +1202,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 																	$save = TRUE;
 																}
 
-																#debug(array($xmlArray['orig_text'][$langKey][$labelKey] , $xmlArray['data']['default'][$labelKey]));
 																if ($updateAllValues || $xmlArray['orig_text'][$langKey][$labelKey] != $xmlArray['data']['default'][$labelKey])	{
 																	$xmlArray['orig_text'][$langKey][$labelKey] = $xmlArray['data']['default'][$labelKey];
 																	$saveLog[$fileRef][$LANG->getLL('savelog_orig_text')][$langKey][$labelKey] = $LANG->getLL('savelog_updated');
@@ -1319,7 +1315,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 				if ($file && @is_file($file))	{
 					$extArray = t3lib_div::xml2array(t3lib_div::getUrl($file));
 				} elseif ($autoFileName) {
-			#		echo t3lib_div::view_array(array('Notice: auto-created file not found, will be created during save.',$autoFileName));
 					$extArray = array();
 				} else {
 					if (class_exists('t3lib_utility_Debug')) {
@@ -1372,26 +1367,23 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 					$dataArray['data'][$editLang] = $autoFileName;
 				}
 
-				// If autoFileName, check if exists, if not, create:
-//				if ($autoFileName)	{
-					$extFile = t3lib_div::getFileAbsFileName($dataArray['data'][$editLang]);
-					if ($extFile && !@is_file($extFile))	{
-						$XML = $this->createXML(array('data' => array()),TRUE);
+				$extFile = t3lib_div::getFileAbsFileName($dataArray['data'][$editLang]);
+				if ($extFile && !@is_file($extFile))	{
+					$XML = $this->createXML(array('data' => array()),TRUE);
 
-							// Dir:
-						$deepDir = dirname(substr($extFile,strlen(PATH_site))).'/';
-						if (t3lib_div::isFirstPartOfStr($deepDir,'typo3conf/l10n/'.$editLang.'/'))	{
-							t3lib_div::mkdir_deep(PATH_site,$deepDir);
+						// Dir:
+					$deepDir = dirname(substr($extFile,strlen(PATH_site))).'/';
+					if (t3lib_div::isFirstPartOfStr($deepDir,'typo3conf/l10n/'.$editLang.'/'))	{
+						t3lib_div::mkdir_deep(PATH_site,$deepDir);
 
-								// Write file:
-							t3lib_div::writeFile($extFile, $XML);
+							// Write file:
+						t3lib_div::writeFile($extFile, $XML);
 
-							if (md5(t3lib_div::getUrl($extFile)) == md5($XML))	{
-								$saveLog[$fileRef][$LANG->getLL('create_new_external_file',true)] = substr($extFile,strlen(PATH_site));
-							} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_tried_to_create'),$extFile);
-						} else $errorLog[$fileRef][] = $LANG->getLL('error_path_not_in_typo3conf');
-					}
-//				}
+						if (md5(t3lib_div::getUrl($extFile)) == md5($XML))	{
+							$saveLog[$fileRef][$LANG->getLL('create_new_external_file',true)] = substr($extFile,strlen(PATH_site));
+						} else $errorLog[$fileRef][] = sprintf($LANG->getLL('error_tried_to_create'),$extFile);
+					} else $errorLog[$fileRef][] = $LANG->getLL('error_path_not_in_typo3conf');
+				}
 
 					// Looking for external file settings:
 				if (is_string($dataArray['data'][$editLang]) && strlen($dataArray['data'][$editLang]))	{
@@ -1482,7 +1474,6 @@ class tx_llxmltranslate_module1 extends t3lib_SCbase {
 
 			// Options:
 		$options = array(
-			#'useIndexTagForAssoc'=>'key',
 			'parentTagMap' => array(
 				'data' => 'languageKey',
 				'orig_hash' => 'languageKey',
