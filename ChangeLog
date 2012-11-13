@@ -1,3 +1,7 @@
+2012-11-13	Oliver Klee <typo3-coding@oliverklee.de>
+
+	* [BUGFIX] #41514 Call to undefined method when saving translation
+
 2011-02-01	Yannick Pavard  <ypavard@infoglobe.ca>
 
 	* Label Changed: "Generated cached" becomes "Statistic page"
@@ -11,7 +15,7 @@
 	* Added feature: Sorting extension list by title or key
 	* Changed: (translate files) Update information in selecbox file after save submit
 	* Changed: Merge and Export page have their own Select Extension menu
-	* Changed: Added CSS for better interface 
+	* Changed: Added CSS for better interface
 	* Changed: Log display hidden in collapsable menu
 	* Changed: Bigger textarea for translation.
 	* Language: LLXML is now fully translatable
