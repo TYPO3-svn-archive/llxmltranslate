@@ -1,5 +1,6 @@
 2012-11-13	Oliver Klee <typo3-coding@oliverklee.de>
-
+	* [BUGFIX] #42939 Drop the function index
+	* [BUGFIX] #42935 Drop commented-out code
 	* [BUGFIX] #42934 Drop trailing whitespace
 	* [BUGFIX] #41514 Call to undefined method when saving translation
 
